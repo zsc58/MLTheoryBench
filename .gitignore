@@ -1,0 +1,50 @@
+# ===== macOS / editor junk =====
+.DS_Store
+*.swp
+.idea/
+.vscode/
+.obsidian/workspace*.json
+.obsidian/cache
+
+# ===== Binary / regenerable source material =====
+*.pdf
+!reports/*.pdf
+*.docx
+记录.docx
+
+# ===== Anti-leakage: private dataset material must NEVER reach a remote =====
+# Keep these ignored even if a future dataset layout reuses the legacy paths.
+data/papers/**/private_source/
+data/papers/**/private_gt/
+
+# ===== Large / regenerable experiment outputs =====
+experiments/runs/*
+!experiments/runs/README.md
+!experiments/runs/_template/
+!experiments/runs/_template/**
+scratch/
+
+# ===== Local experiment provider credentials =====
+experiments/.runtime/
+
+# ===== Local Codex API profiles and credentials =====
+data/ml-theory-benchmark-skill/.runtime/
+
+# ===== Local project history and private audit archive =====
+project_history/
+.cleanup_quarantine/
+
+# Local private raw archives. Keep the data/ path itself available for a future
+# de-identified public release.
+/data/PaperProof_*_raw_*.zip
+/data/PaperProof_*_raw_*.zip.sha256
+
+# ===== Python (when scripts arrive) =====
+__pycache__/
+*.pyc
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ===== Keep empty structural dirs (negated below) =====
+!**/.gitkeep

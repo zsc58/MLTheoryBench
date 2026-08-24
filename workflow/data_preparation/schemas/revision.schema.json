@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Formalization Revision",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "explanation", "replacements", "self_audit"],
+  "properties": {
+    "status": {
+      "enum": [
+        "formalization_error_fixed", "scoring_error_fixed",
+        "source_check_required", "invalid_objection"
+      ]
+    },
+    "explanation": {"type": "string", "minLength": 1},
+    "replacements": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/replacements"}]
+    },
+    "self_audit": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/checks"}]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["formalization_error_fixed", "scoring_error_fixed"]}}},
+      "then": {
+        "properties": {
+          "replacements": {"$ref": "#/$defs/replacements"},
+          "self_audit": {"$ref": "#/$defs/checks"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"enum": ["source_check_required", "invalid_objection"]}}},
+      "then": {"properties": {"replacements": {"type": "null"}, "self_audit": {"type": "null"}}}
+    }
+  ],
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence"],
+      "properties": {
+        "status": {"enum": ["pass", "fail"]},
+        "evidence": {"type": "string", "minLength": 1}
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definition_integrity", "self_containment", "source_fidelity",
+        "anti_leakage", "contribution_fidelity", "validity", "scope"
+      ],
+      "properties": {
+        "definition_integrity": {"$ref": "#/$defs/check"},
+        "self_containment": {"$ref": "#/$defs/check"},
+        "source_fidelity": {"$ref": "#/$defs/check"},
+        "anti_leakage": {"$ref": "#/$defs/check"},
+        "contribution_fidelity": {"$ref": "#/$defs/check"},
+        "validity": {"$ref": "#/$defs/check"},
+        "scope": {"$ref": "#/$defs/check"}
+      }
+    },
+    "replacements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_md", "proof_ground_truth_md", "rubric_md", "provenance"],
+      "properties": {
+        "task_md": {"type": ["string", "null"], "minLength": 1},
+        "proof_ground_truth_md": {"type": ["string", "null"], "minLength": 1},
+        "rubric_md": {"type": ["string", "null"], "minLength": 1},
+        "provenance": {"type": ["object", "null"]}
+      }
+    }
+  }
+}

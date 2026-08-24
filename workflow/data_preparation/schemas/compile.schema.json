@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Source-Blind Formalization Bundle",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status", "reason", "task_md", "proof_ground_truth_md", "rubric_md",
+    "provenance"
+  ],
+  "properties": {
+    "status": {"enum": ["formalized", "source_material_insufficient"]},
+    "reason": {"type": ["string", "null"], "minLength": 1},
+    "task_md": {"type": ["string", "null"], "minLength": 1},
+    "proof_ground_truth_md": {"type": ["string", "null"], "minLength": 1},
+    "rubric_md": {"type": ["string", "null"], "minLength": 1},
+    "provenance": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/provenance"}]
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "formalized"}}},
+      "then": {
+        "properties": {
+          "reason": {"type": "null"},
+          "task_md": {"type": "string", "minLength": 1},
+          "proof_ground_truth_md": {"type": "string", "minLength": 1},
+          "rubric_md": {"type": "string", "minLength": 1},
+          "provenance": {"$ref": "#/$defs/provenance"}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "source_material_insufficient"}}},
+      "then": {
+        "properties": {
+          "reason": {"type": "string", "minLength": 1},
+          "task_md": {"type": "null"},
+          "proof_ground_truth_md": {"type": "null"},
+          "rubric_md": {"type": "null"},
+          "provenance": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "material_id": {"type": "string", "pattern": "^theory_[0-9]{3}$"},
+    "transformation": {
+      "enum": [
+        "exact", "notation_only", "reordered", "equivalent_restatement",
+        "standard_background"
+      ]
+    },
+    "public_clause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clause_id", "kind", "source_material_ids", "transformation"],
+      "properties": {
+        "clause_id": {"type": "string", "pattern": "^clause_[0-9]{3}$"},
+        "kind": {"enum": ["definition", "primitive_assumption", "target"]},
+        "source_material_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/material_id"}
+        },
+        "transformation": {"$ref": "#/$defs/transformation"}
+      }
+    },
+    "private_proof_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "source_material_ids"],
+      "properties": {
+        "step_id": {"type": "string", "pattern": "^step_[0-9]{3}$"},
+        "source_material_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/material_id"}
+        }
+      }
+    },
+    "notation_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "public"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "public": {"type": "string", "minLength": 1}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_clauses", "private_proof_steps", "notation_map",
+        "applied_source_repairs"
+      ],
+      "properties": {
+        "public_clauses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/public_clause"}
+        },
+        "private_proof_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/private_proof_step"}
+        },
+        "notation_map": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/notation_entry"}
+        },
+        "applied_source_repairs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/material_id"}
+        }
+      }
+    }
+  }
+}

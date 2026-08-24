@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Combined Paper Analysis",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["triage", "target_selection", "source_audit", "derived"],
+  "properties": {
+    "triage": {"type": "object"},
+    "target_selection": {"type": "object"},
+    "source_audit": {"type": "object"},
+    "derived": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_statuses",
+        "paper_level_theory_issue",
+        "provisional_selected_chain_id",
+        "ranked_chain_ids",
+        "chain_gate_results",
+        "selected_chain_id",
+        "selected_candidate_ids",
+        "selected_material_ids",
+        "fallback_used",
+        "selected_target_blocked",
+        "status",
+        "stop_reason"
+      ],
+      "properties": {
+        "result_statuses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "item_id",
+              "reported_proof_status",
+              "effective_proof_status",
+              "combined_status",
+              "failed_dependencies"
+            ],
+            "properties": {
+              "item_id": {
+                "type": "string",
+                "pattern": "^theory_[0-9]{3}$"
+              },
+              "reported_proof_status": {
+                "type": "string",
+                "enum": ["clean", "minor_error", "major_gap"]
+              },
+              "effective_proof_status": {
+                "type": "string",
+                "enum": ["clean", "minor_error", "major_gap"]
+              },
+              "combined_status": {
+                "type": "string",
+                "enum": [
+                  "clean",
+                  "minor_source_issue_fixed",
+                  "paper_issue_confirmed"
+                ]
+              },
+              "failed_dependencies": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^theory_[0-9]{3}$"
+                }
+              }
+            }
+          }
+        },
+        "paper_level_theory_issue": {"type": "boolean"},
+        "provisional_selected_chain_id": {
+          "type": "string",
+          "pattern": "^chain_[0-9]{3}$"
+        },
+        "ranked_chain_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "pattern": "^chain_[0-9]{3}$"
+          }
+        },
+        "chain_gate_results": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "chain_id",
+              "candidate_ids",
+              "selected_material_ids",
+              "blocking_material_ids",
+              "blocked"
+            ],
+            "properties": {
+              "chain_id": {
+                "type": "string",
+                "pattern": "^chain_[0-9]{3}$"
+              },
+              "candidate_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^theory_[0-9]{3}$"
+                }
+              },
+              "selected_material_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^theory_[0-9]{3}$"
+                }
+              },
+              "blocking_material_ids": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^theory_[0-9]{3}$"
+                }
+              },
+              "blocked": {"type": "boolean"}
+            }
+          }
+        },
+        "selected_chain_id": {
+          "type": ["string", "null"],
+          "pattern": "^chain_[0-9]{3}$"
+        },
+        "selected_candidate_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^theory_[0-9]{3}$"
+          }
+        },
+        "selected_material_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^theory_[0-9]{3}$"
+          }
+        },
+        "fallback_used": {"type": "boolean"},
+        "selected_target_blocked": {"type": "boolean"},
+        "status": {"type": "string", "enum": ["proceed", "stopped"]},
+        "stop_reason": {
+          "type": ["string", "null"],
+          "enum": [null, "paper_issue_confirmed"]
+        }
+      }
+    }
+  }
+}

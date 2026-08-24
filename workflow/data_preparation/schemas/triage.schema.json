@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Paper Triage Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "filter_reason",
+    "principal_contribution",
+    "theory_inventory",
+    "paper_type",
+    "theory_auxiliary_subtype",
+    "triage_reasoning"
+  ],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["proceed", "filtered_out"]
+    },
+    "filter_reason": {
+      "type": ["string", "null"],
+      "enum": [null, "paper_not_theory_core", "paper_too_weak"]
+    },
+    "principal_contribution": {
+      "type": "string",
+      "minLength": 1
+    },
+    "theory_inventory": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/theory_material"
+      }
+    },
+    "paper_type": {
+      "type": "string",
+      "enum": [
+        "empirical_or_method_only",
+        "theory_auxiliary",
+        "theory_core"
+      ]
+    },
+    "theory_auxiliary_subtype": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/auxiliary_subtype"}
+      ]
+    },
+    "triage_reasoning": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "$defs": {
+    "theory_material": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "role",
+        "source_label",
+        "summary",
+        "source_spans",
+        "depends_on"
+      ],
+      "properties": {
+        "item_id": {
+          "type": "string",
+          "pattern": "^theory_[0-9]{3}$"
+        },
+        "role": {
+          "type": "string",
+          "enum": [
+            "theory_candidate",
+            "internal_support",
+            "definition",
+            "external"
+          ]
+        },
+        "source_label": {
+          "type": "string",
+          "minLength": 1
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_spans": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^theory_[0-9]{3}$"
+          }
+        }
+      }
+    },
+    "auxiliary_subtype": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["representative", "complete_closure", "generic"],
+      "properties": {
+        "representative": {"type": "boolean"},
+        "complete_closure": {"type": "boolean"},
+        "generic": {"type": "boolean"}
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "paper_type": {"const": "empirical_or_method_only"}
+        },
+        "required": ["paper_type"]
+      },
+      "then": {
+        "properties": {
+          "status": {"const": "filtered_out"},
+          "filter_reason": {"const": "paper_not_theory_core"},
+          "theory_auxiliary_subtype": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "paper_type": {"const": "theory_core"}
+        },
+        "required": ["paper_type"]
+      },
+      "then": {
+        "properties": {
+          "status": {"const": "proceed"},
+          "filter_reason": {"type": "null"},
+          "theory_auxiliary_subtype": {"type": "null"}
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "paper_type": {"const": "theory_auxiliary"}
+        },
+        "required": ["paper_type"]
+      },
+      "then": {
+        "properties": {
+          "theory_auxiliary_subtype": {
+            "$ref": "#/$defs/auxiliary_subtype"
+          }
+        },
+        "oneOf": [
+          {
+            "properties": {
+              "status": {"const": "proceed"},
+              "filter_reason": {"type": "null"},
+              "theory_auxiliary_subtype": {
+                "properties": {
+                  "representative": {"const": true},
+                  "complete_closure": {"const": true},
+                  "generic": {"const": false}
+                }
+              }
+            }
+          },
+          {
+            "properties": {
+              "status": {"const": "filtered_out"},
+              "filter_reason": {"const": "paper_too_weak"}
+            },
+            "not": {
+              "properties": {
+                "theory_auxiliary_subtype": {
+                  "properties": {
+                    "representative": {"const": true},
+                    "complete_closure": {"const": true},
+                    "generic": {"const": false}
+                  }
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

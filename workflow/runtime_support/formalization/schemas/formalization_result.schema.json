@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Contribution Formalization Turn Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "resolution", "stop_reason", "written_files"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["formalized", "filtered_out", "stopped"]
+    },
+    "resolution": {
+      "type": "string",
+      "enum": ["initial", "formalization_error_fixed", "invalid_objection", "paper_issue_suspected"]
+    },
+    "stop_reason": {
+      "type": ["string", "null"],
+      "enum": [null, "paper_not_theory_core", "paper_too_weak", "paper_issue_suspected", "formalization_not_self_containable", "scope_too_large"]
+    },
+    "written_files": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["contribution_analysis.json", "task.md", "proof_ground_truth.md", "rubric.md", "provenance.json", "self_audit.json"]
+      }
+    }
+  }
+}

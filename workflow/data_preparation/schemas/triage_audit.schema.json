@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Independent Triage Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "checks", "effective_triage", "reasoning"],
+  "properties": {
+    "status": {"enum": ["confirmed_filtered_out", "corrected"]},
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["principal_contribution", "theory_inventory", "classification"],
+      "properties": {
+        "principal_contribution": {"$ref": "#/$defs/check"},
+        "theory_inventory": {"$ref": "#/$defs/check"},
+        "classification": {"$ref": "#/$defs/check"}
+      }
+    },
+    "effective_triage": {"type": "object"},
+    "reasoning": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence"],
+      "properties": {
+        "status": {"enum": ["pass", "fail"]},
+        "evidence": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}

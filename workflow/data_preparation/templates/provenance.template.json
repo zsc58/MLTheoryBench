@@ -1,0 +1,18 @@
+{
+  "public_clauses": [
+    {
+      "clause_id": "clause_001",
+      "kind": "target",
+      "source_material_ids": ["theory_001"],
+      "transformation": "exact"
+    }
+  ],
+  "private_proof_steps": [
+    {
+      "step_id": "step_001",
+      "source_material_ids": ["theory_001"]
+    }
+  ],
+  "notation_map": [],
+  "applied_source_repairs": []
+}

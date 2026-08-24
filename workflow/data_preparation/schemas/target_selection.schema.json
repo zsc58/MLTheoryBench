@@ -1,0 +1,209 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Flagship Target Selection",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "stop_reason",
+    "formalization_target",
+    "candidate_chain_evaluations",
+    "ranked_chain_ids",
+    "selected_chain_id",
+    "selected_candidate_ids",
+    "attached_material_ids",
+    "target_selection_reasoning",
+    "characteristic_bottleneck",
+    "omitted_candidates",
+    "selection_ambiguity"
+  ],
+  "properties": {
+    "status": {"enum": ["selected", "stopped"]},
+    "stop_reason": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "string", "const": "no_suitable_flagship_chain"}
+      ]
+    },
+    "formalization_target": {"type": ["string", "null"]},
+    "candidate_chain_evaluations": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 4,
+      "items": {"$ref": "#/$defs/chain_evaluation"}
+    },
+    "ranked_chain_ids": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/chain_id"}
+    },
+    "selected_chain_id": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/chain_id"}
+      ]
+    },
+    "selected_candidate_ids": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/material_id"}
+    },
+    "attached_material_ids": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/material_id"}
+    },
+    "target_selection_reasoning": {"type": "string", "minLength": 1},
+    "characteristic_bottleneck": {"type": ["string", "null"]},
+    "omitted_candidates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["item_id", "reason"],
+        "properties": {
+          "item_id": {"$ref": "#/$defs/material_id"},
+          "reason": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "selection_ambiguity": {"type": ["string", "null"]}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"const": "selected"}}},
+      "then": {
+        "properties": {
+          "stop_reason": {"type": "null"},
+          "formalization_target": {"type": "string", "minLength": 1},
+          "ranked_chain_ids": {"minItems": 1},
+          "selected_chain_id": {"$ref": "#/$defs/chain_id"},
+          "selected_candidate_ids": {"minItems": 1},
+          "characteristic_bottleneck": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    {
+      "if": {"properties": {"status": {"const": "stopped"}}},
+      "then": {
+        "properties": {
+          "stop_reason": {"const": "no_suitable_flagship_chain"},
+          "formalization_target": {"type": "null"},
+          "ranked_chain_ids": {"maxItems": 0},
+          "selected_chain_id": {"type": "null"},
+          "selected_candidate_ids": {"maxItems": 0},
+          "attached_material_ids": {"maxItems": 0},
+          "characteristic_bottleneck": {"type": "null"},
+          "selection_ambiguity": {"type": "null"}
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "material_id": {
+      "type": "string",
+      "pattern": "^theory_[0-9]{3}$"
+    },
+    "chain_id": {
+      "type": "string",
+      "pattern": "^chain_[0-9]{3}$"
+    },
+    "contribution_fidelity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paper_level_contribution_recovery",
+        "scientific_sufficiency",
+        "scope_economy",
+        "total",
+        "reason"
+      ],
+      "properties": {
+        "paper_level_contribution_recovery": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "scientific_sufficiency": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "scope_economy": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3
+        },
+        "total": {"type": "integer", "minimum": 0, "maximum": 9},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "difficulty_fidelity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "bottleneck_coverage",
+        "mechanism_representativeness",
+        "difficulty_distortion",
+        "total",
+        "reason"
+      ],
+      "properties": {
+        "bottleneck_coverage": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "mechanism_representativeness": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "difficulty_distortion": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
+        },
+        "total": {"type": "integer", "minimum": 0, "maximum": 6},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "chain_evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "chain_id",
+        "candidate_ids",
+        "scientific_claim",
+        "claimed_proof_architecture",
+        "claimed_characteristic_bottleneck",
+        "contribution_fidelity",
+        "difficulty_fidelity"
+      ],
+      "properties": {
+        "chain_id": {"$ref": "#/$defs/chain_id"},
+        "candidate_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/material_id"}
+        },
+        "scientific_claim": {"type": "string", "minLength": 1},
+        "claimed_proof_architecture": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "claimed_characteristic_bottleneck": {
+          "type": "string",
+          "minLength": 1
+        },
+        "contribution_fidelity": {
+          "$ref": "#/$defs/contribution_fidelity"
+        },
+        "difficulty_fidelity": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/difficulty_fidelity"}
+          ]
+        }
+      }
+    }
+  }
+}

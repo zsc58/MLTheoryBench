@@ -1,0 +1,34 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Inline Formalization Audit Or Revision (Revised Triage)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "resolution",
+    "stop_reason",
+    "analysis",
+    "self_audit",
+    "task_md",
+    "proof_ground_truth_md",
+    "rubric_md",
+    "provenance"
+  ],
+  "properties": {
+    "status": {"type": "string", "enum": ["formalized", "filtered_out", "stopped"]},
+    "resolution": {
+      "type": "string",
+      "enum": ["initial", "formalization_error_fixed", "invalid_objection", "paper_issue_suspected"]
+    },
+    "stop_reason": {
+      "type": ["string", "null"],
+      "enum": [null, "paper_not_theory_core", "paper_too_weak", "paper_issue_suspected", "formalization_not_self_containable", "failed_after_max_revisions"]
+    },
+    "analysis": {"type": ["object", "null"]},
+    "self_audit": {"type": "object"},
+    "task_md": {"type": ["string", "null"]},
+    "proof_ground_truth_md": {"type": ["string", "null"]},
+    "rubric_md": {"type": ["string", "null"]},
+    "provenance": {"type": ["object", "null"]}
+  }
+}

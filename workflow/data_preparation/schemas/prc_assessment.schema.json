@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Proof Reconstruction Complexity Assessment",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status", "solver_obligations", "material_capabilities",
+    "proof_reconstruction_complexity", "proof_route_exposure",
+    "effective_complexity_total", "proof_reconstruction_complexity_level",
+    "benchmark_suitability", "overall_reason"
+  ],
+  "properties": {
+    "status": {"enum": ["scored", "formalization_revision_required"]},
+    "solver_obligations": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "material_capabilities": {
+      "type": "array", "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "proof_reconstruction_complexity": {"$ref": "#/$defs/complexity"},
+    "proof_route_exposure": {"$ref": "#/$defs/exposure"},
+    "effective_complexity_total": {"type": ["integer", "null"], "minimum": 0, "maximum": 12},
+    "proof_reconstruction_complexity_level": {
+      "type": ["string", "null"],
+      "enum": [null, "PRC0", "PRC1", "PRC2", "PRC3", "PRC4"]
+    },
+    "benchmark_suitability": {
+      "type": ["string", "null"],
+      "enum": [null, "reject", "baseline", "primary", "stress"]
+    },
+    "overall_reason": {"type": "string", "minLength": 1}
+  },
+  "$defs": {
+    "dimension": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["score", "reason"],
+      "properties": {
+        "score": {"type": "integer", "minimum": 0, "maximum": 3},
+        "reason": {"type": "string", "minLength": 1}
+      }
+    },
+    "complexity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "strategy_discovery", "subgoal_structure_dependency",
+        "technical_reasoning_execution", "capability_integration",
+        "intrinsic_complexity_total"
+      ],
+      "properties": {
+        "strategy_discovery": {"$ref": "#/$defs/dimension"},
+        "subgoal_structure_dependency": {"$ref": "#/$defs/dimension"},
+        "technical_reasoning_execution": {"$ref": "#/$defs/dimension"},
+        "capability_integration": {"$ref": "#/$defs/dimension"},
+        "intrinsic_complexity_total": {"type": "integer", "minimum": 0, "maximum": 12}
+      }
+    },
+    "exposure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["level", "reason", "required_revision"],
+      "properties": {
+        "level": {"type": "integer", "minimum": 0, "maximum": 3},
+        "reason": {"type": "string", "minLength": 1},
+        "required_revision": {"type": ["string", "null"], "minLength": 1}
+      }
+    }
+  }
+}

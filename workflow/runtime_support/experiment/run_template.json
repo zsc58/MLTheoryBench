@@ -1,0 +1,56 @@
+{
+  "schema_version": "1.0",
+  "run_id": "TODO",
+  "status": "planned",
+  "created_at": null,
+  "protocol": "closed_book_llm_then_two_stage_codex_evaluation",
+  "dataset": {
+    "root": "data/papers",
+    "split": "TODO",
+    "task_type": "task_prove_theorem",
+    "selection": "TODO",
+    "expected_task_count": null
+  },
+  "solver": {
+    "kind": "llm_single_request",
+    "provider": "TODO",
+    "model": "TODO",
+    "reasoning_effort": "TODO",
+    "wire_api": "TODO",
+    "system_prompt": "proof_experiment/llm_solver/prompts/proof_system_prompt.md",
+    "answer_template": "proof_experiment/llm_solver/prompts/proof_answer_template.md",
+    "tools_enabled": false,
+    "retrieval_enabled": false,
+    "requests_per_task": 1
+  },
+  "evaluator": {
+    "kind": "two_independent_codex_agents",
+    "model": "TODO",
+    "reasoning_effort": "TODO",
+    "stages": [
+      {
+        "name": "validity_reviewer",
+        "prompt": "reviewer_and_evaluator/reviewer/system_prompt.md",
+        "private_reference_access": false,
+        "assigns_score": false
+      },
+      {
+        "name": "reference_scorer",
+        "prompt": "reviewer_and_evaluator/evaluator/system_prompt.md",
+        "private_reference_access": true,
+        "assigns_score": true
+      }
+    ],
+    "score_scale": "integer_0_to_10",
+    "evaluators_per_answer": 2
+  },
+  "tasks": {},
+  "usage": {
+    "scope": "clean_experiment_only",
+    "solver": {},
+    "validity_reviewer": {},
+    "evaluator": {},
+    "total": {}
+  },
+  "notes": ""
+}

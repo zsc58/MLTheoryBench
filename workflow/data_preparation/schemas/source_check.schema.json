@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Stage 3 Local Source Check",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status", "explanation", "affected_material_ids", "source_audit"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "source_record_corrected",
+        "paper_issue_confirmed",
+        "objection_rejected"
+      ]
+    },
+    "explanation": {"type": "string", "minLength": 1},
+    "affected_material_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "pattern": "^theory_[0-9]{3}$"}
+    },
+    "source_audit": {"type": "object"}
+  }
+}
