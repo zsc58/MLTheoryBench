@@ -1,0 +1,11 @@
+# Public raw sources are retained locally for provenance, not automatically redistributed.
+research/public_snapshot_20260907/
+research/source_pilot_20260908/
+# Future isolated runtimes and any judge-private labels/logs remain local.
+.tools/
+.runtime/
+private_gt/
+runs/
+__pycache__/
+# Reproducible public source copies and old source-preparation archives stay local.
+research/case_rebuild_20260916/

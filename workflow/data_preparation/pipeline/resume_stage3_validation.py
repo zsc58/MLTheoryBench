@@ -21,7 +21,7 @@ from stage3_validation import Stage3ExperimentValidation  # noqa: E402
 
 
 DEFAULT_API_PROFILE = (
-    WORKFLOW_ROOT / ".runtime/get-codex"
+    WORKFLOW_ROOT.parent / ".venv/paperproof-config/model-suite/get-api"
 )
 
 
@@ -92,7 +92,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--paper-dir", required=True, type=Path)
     parser.add_argument("--api-profile", type=Path, default=DEFAULT_API_PROFILE)
     parser.add_argument("--local-agent-auth", action="store_true")
-    parser.add_argument("--model", default="gpt-5.6-sol")
+    parser.add_argument("--model", default="gpt-6-astra")
     parser.add_argument(
         "--reasoning-effort",
         choices=["none", "low", "medium", "high", "xhigh", "max"],

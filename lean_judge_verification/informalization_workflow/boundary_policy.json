@@ -1,0 +1,15 @@
+{
+  "schema_version": "1.0",
+  "scope_owner": "author_agent_with_dependency_checks",
+  "conceptual_depth_soft_limit": 5,
+  "rules": [
+    "The complete elaborated target contract is fixed; boundary selection must not strengthen its assumptions or weaken its conclusion.",
+    "Select expanded mathematical nodes from actual source applications and declaration dependencies, not the import graph.",
+    "Mathlib proof bodies normally stop at the background boundary; retain definitions and instantiated interfaces. Library location alone does not justify granting the target or an equivalent answer.",
+    "A project theorem may be granted as a named background tool with its full interface and a mathematical stopping reason. Do not hide the substantive target argument in a background lemma.",
+    "Group definitions, instances and routine implementation lemmas as context only with an explicit reason. Context grouping never deletes their dependencies from the coverage check.",
+    "The conceptual-depth limit is advisory, not permission to omit a dependency or silently grant a theorem. Record an explicit boundary or an unresolved scope issue.",
+    "Use one consistent boundary for a correct reference and all mutations derived from it. Freeze the plan before detailed drafting; revisions require a new recorded plan checkpoint.",
+    "The reviewer judges the mathematical suitability of the boundary independently; graph closure and Lean compilation do not certify the English proof."
+  ]
+}

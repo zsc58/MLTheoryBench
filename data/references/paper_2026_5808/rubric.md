@@ -1,0 +1,21 @@
+# Scoring Guide
+
+- **0:** No correct idea or relevant valid method.
+- **1-2:** Nontrivial relevant ideas, but no complete correct proof step or useful conclusion.
+- **3-7:** Some correct core steps or conclusions, but important steps are missing.
+- **8-9:** Complete and essentially correct, with only readily repairable errors or omitted cases.
+- **10:** Fully correct.
+
+# Core Steps
+
+1. **Weighted contraction construction and verification (3 points).** Derives the uniform x-Lipschitz and Jacobian estimates from co-coercivity and the conditional mean-perturbation assumption. Constructs an appropriate continuous weight and verifies its directional contraction at order alpha^(m-1), including the core, transition, and tail regimes. Handles m=2 without nondegeneracy and both quadratic and subquadratic tails under their respective moment assumptions. Lifts the estimate to the augmented path metric using the composed-noise Lipschitz condition and a valid joint bound involving the random driving-chain Lipschitz coefficient; does not assume that coefficient is independent of the image weight. Verifies finite expected reference-point displacement.
+
+2. **Invariant-law conclusion (2 points).** Establishes completeness and separability of the induced metric and correctly applies the Wasserstein contraction/fixed-point argument to obtain existence, membership in P_1, and geometric convergence. Proves uniqueness among all Borel invariant probability laws, rather than only comparing invariant laws already known to have first moments. The displayed contraction must cover all pairs with finite mutual transportation cost, not only pairs separately in P_1.
+
+3. **Stationary scaling and noise homogenization (3 points).** Establishes driving-chain ergodicity and the fixed stationary chain marginal. Constructs the centered Poisson solution, proves its relevant integrability and dependence on x, obtains the martingale-plus-telescoping decomposition, and proves absolute convergence and positive semidefiniteness of the Green--Kubo covariance. Justifies second moments before using the stationary square identity, including the quadratic-tail case where the initial ergodicity theorem only supplies first moments. Controls the Markovian cross term to obtain O(alpha) stationary energy, local m-th moments, tightness of the rescaled laws, and the required Lindeberg and local uniform-integrability estimates.
+
+4. **Limiting generator and uniqueness (2 points).** Supplies a valid stationary perturbed-test-function expansion, or a complete alternative argument, including cancellation of the conditional noise mean and control of the x-dependent Poisson correction and Taylor remainders. Retains the Poisson cross terms in the covariance calculation: M_x=g_x g_x^T+g_x chi_x^T+chi_x g_x^T in the reference route. Justifies covariance replacement and asymptotic factorization, and identifies the averaged matrix with Sigma. Establishes the homogeneous drift's coercivity and m-power monotonicity without assuming convergence of Hessians. Proves existence and uniqueness of the limiting diffusion's invariant law for arbitrary positive semidefinite Sigma, verifies the hypotheses of any stationary-generator characterization used, and concludes full weak convergence.
+
+# Evaluator Notes
+
+Accept a complete valid alternative proof. Do not require the reference proof's incidental presentation choices, its particular weight when another weight works, or its organization of the Poisson and moment arguments. The source's paper-specific contraction and scaling lemmas are not assumptions of the public problem and cannot be cited as substitutes for their proof. A named method without the corresponding estimates earns no credit for that step; theorem-critical gaps in contraction, stationary moment justification, covariance identification, generator remainders, or uniqueness are major. Absolute covariance summability is not a primitive assumption in the repaired task. Do not require nondegeneracy of Sigma or impose exponential noise moments when beta=2. Routine well-definedness and the standard independent fixed-point, stochastic-calculus, and stationary martingale-problem results may be used with their relevant hypotheses verified.

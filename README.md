@@ -1,24 +1,106 @@
-# PaperProof
+<div align="center">
 
-PaperProof 用于评测 AI 系统能否重建机器学习理论结果的证明。项目以 2026 年公开论文作为私有 ground truth，solver 只接收去身份化的闭卷证明任务，再由独立 reviewer 和 evaluator 检查并按参考证明与 rubric 评分。
+# MLTheoryBench
 
-## 仓库结构
+**Evaluating Proofs in Machine Learning Theory**
 
-| 目录 | 作用 |
-|---|---|
-| `workflow/` | 完整可复现链路：paper triage、flagship chain 选择、formalization、闭卷 solver、reviewer、evaluator、schemas、调度代码与测试。 |
-| `reports/` | 面向汇报和论文写作的项目设计报告与图示。 |
+[Blog](https://openmltheory.com/blog/MLtheorybench) · [Dataset](data/README.md) · [Quick Start](#quick-start) · [Repository Structure](#repository-structure)
 
-## 数据说明
+</div>
 
-本仓库当前不发布原始数据包。原始包含论文来源、私有 ground truth 和 evaluator 所需参考材料，仅在本地保存，不得暴露给闭卷 solver 或推送到远程 Git。去身份化的公开任务与数据索引将在完成 anti-leakage 审查后单独发布。
+MLTheoryBench turns the principal theoretical contributions of recent machine learning papers into closed-book proof tasks. It measures proof completion and gives partial credit for valid mathematical progress.
 
-## 当前工作流
+The benchmark contains **885 tasks**, reference proofs, 10-point rubrics, and code for task construction and model evaluation. The [project blog](https://openmltheory.com/blog/MLtheorybench) presents the motivation, results, and case studies.
 
-1. Thread A 完成理论贡献 triage、flagship chain 选择和原文恢复/审计。
-2. Thread B 构建并审查自洽的公开证明任务，再评估 proof-reconstruction complexity。
-3. 闭卷 solver 只看到 public task，不能使用工具、网络或检索。
-4. Validity reviewer 在不读参考证明的情况下检查 solver proof。
-5. Reference evaluator 根据私有 ground truth 和 rubric 对可评分答案给出分数。
+## Evaluation Design
 
-可运行实现见 [`workflow/README.md`](workflow/README.md)，对外报告见 [`reports/README.md`](reports/README.md)。
+- **One theoretical contribution per task.** A flagship chain can combine matching upper and lower bounds, necessary and sufficient conditions, or a general result and its key application. The task states the target and assumptions; the reference proof retains the intermediate results that the Solver must discover and prove.
+- **Complexity assessed before solving.** Proof Reconstruction Complexity (PRC) evaluates strategy discovery, subgoal structure, technical execution, and tool integration, assigning each task a level from PRC0 to PRC4.
+- **Audited, frozen tasks.** A full-source Audit and an independent Task+GT Checker verify the task and reference proof before the evaluation version is frozen.
+- **Independent validity review and stepwise scoring.** The Validity Reviewer reads the task and answer. The Reference Evaluator adds the reference proof (GT) and rubric, awards credit for valid partial progress, and accepts correct alternative proofs. Scores of 8 or above indicate a substantially complete proof.
+
+<p align="center">
+  <img src="https://openmltheory.com/blog/assets/figures/fig1_pipeline_en.png" alt="MLTheoryBench task construction and closed-book evaluation pipeline" width="960">
+</p>
+
+## Dataset
+
+Tasks come from arXiv papers submitted between January 1 and July 27, 2026: primary `stat.ML`, ML-related primary `math.OC`, and primary `cs.LG` cross-listed in `stat.ML`. Recent papers, de-identified tasks, and closed-book solving reduce opportunities to recall or retrieve the original proofs.
+
+| PRC0 | PRC1 | PRC2 | PRC3 | PRC4 | Total |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 61 | 324 | 242 | 111 | 147 | **885** |
+
+```text
+data/
+├── manifest.json                         # Task IDs, PRC, paths, and SHA-256 hashes
+├── tasks/<paper_id>/task.md               # Solver input
+└── references/<paper_id>/
+    ├── proof_ground_truth.md             # Reference proof (GT)
+    └── rubric.md                         # Scoring rubric
+```
+
+The manifest identifies each task's final frozen version by file hash. During evaluation, the Solver receives the task and common instructions; reference proofs and rubrics are inputs to the judges.
+
+## Quick Start
+
+### 1. Install and Validate
+
+Use Python 3.11 or later and install Codex CLI for agent-based judging.
+
+```bash
+git clone https://github.com/zsc58/MLTheoryBench.git
+cd MLTheoryBench
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+
+# Validate all dataset files and preview the selected task offline
+.venv/bin/python workflow/run.py evaluate \
+  --data-root data --paper-id paper_2026_001 --dry-run
+```
+
+### 2. Configure Models
+
+Model definitions and request parameters are in [`model_suite.json`](workflow/evaluation/config/model_suite.json). Generate local profiles from protected key files. See [model configuration](workflow/evaluation/README.md#model-configuration) for profile settings and custom models.
+
+```bash
+.venv/bin/python workflow/run.py profiles \
+  --get-key-file /absolute/protected/path/get_api_key \
+  --novita-key-file /absolute/protected/path/novita_api_key
+```
+
+### 3. Solve and Score
+
+```bash
+.venv/bin/python workflow/run.py evaluate \
+  --data-root data --paper-id paper_2026_001 \
+  --mode test --run-id example_001 --run-root .runtime/example_001 \
+  --profiles-dir .venv/paperproof-config/model-suite
+```
+
+Test mode runs the two configured GPT Solvers; `--mode formal` selects the full model suite. Repeat `--paper-id` to select several tasks, use `--all` for the entire dataset, and set `--paper-workers` to control concurrency across complete task pipelines.
+
+Each Solver independently receives a 48,000-token completion budget. Answers to the same task are anonymized and jointly reviewed, with a separate score for each answer. An attempt with no final answer receives zero credit; API failures are recorded separately. Results are saved under the specified run directory, and the task version remains frozen throughout evaluation.
+
+## Repository Structure
+
+| Module | Purpose |
+| --- | --- |
+| [`workflow/`](workflow/README.md) | Paper screening, flagship-chain selection, task construction and calibration, closed-book solving, and joint judging. |
+| [`error_taxonomy/`](error_taxonomy/README.md) | Source-paper error classification, repair difficulty, Result Impact, and Paper Impact. |
+| [`lean_judge_verification/`](lean_judge_verification/README.md) | Lean-backed natural-language proof construction, fidelity review, and controlled error detection. |
+
+The main entry point is `workflow/run.py`: use `build` to construct tasks, `calibrate` for source-aware revision, and `evaluate` for the released dataset. `workflow/legacy_comparison/` preserves the earlier protocol for compatibility and regression testing.
+
+<details>
+<summary><b>Regression Tests</b></summary>
+
+```bash
+.venv/bin/python -m unittest discover -s workflow/data_preparation/tests -p 'test_*.py'
+.venv/bin/python -m unittest discover -s workflow/runtime_support/tests -p 'test_*.py'
+.venv/bin/python -m unittest discover -s workflow/evaluation/tests -p 'test_*.py'
+.venv/bin/python -m unittest discover -s error_taxonomy/tests -p 'test_*.py'
+.venv/bin/python -m unittest discover -s workflow/legacy_comparison/tests -p 'test_*.py'
+```
+
+</details>

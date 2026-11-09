@@ -33,7 +33,7 @@ from runtime_support.experiment.summary_builder import (  # noqa: E402
 
 
 DEFAULT_RUNS_ROOT = WORKSPACE_ROOT / ".runtime/runs"
-DEFAULT_API_PROFILE = WORKSPACE_ROOT / ".runtime/get-codex"
+DEFAULT_API_PROFILE = WORKSPACE_ROOT.parent / ".venv/paperproof-config/model-suite/get-api"
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,7 +48,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--runs-root", type=Path, default=DEFAULT_RUNS_ROOT)
     parser.add_argument("--solver-env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--evaluator-api-profile", type=Path, default=DEFAULT_API_PROFILE)
-    parser.add_argument("--evaluator-model", default="gpt-5.6-terra")
+    parser.add_argument("--evaluator-model", default="gpt-6-astra")
     parser.add_argument(
         "--evaluator-reasoning-effort",
         choices=["none", "low", "medium", "high", "xhigh", "max"],
@@ -239,12 +239,13 @@ def main() -> int:
 
         update_run_record(run_dir, complete)
     except Exception as error:
+        failure_message = str(error)
         failed_at = datetime.now(timezone.utc).isoformat()
 
         def fail(record: dict[str, Any]) -> None:
             record["status"] = "failed"
             record["failed_at"] = failed_at
-            record["error"] = str(error)
+            record["error"] = failure_message
 
         update_run_record(run_dir, fail)
         raise

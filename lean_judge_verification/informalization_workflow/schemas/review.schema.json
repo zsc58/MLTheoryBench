@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema", "type": "object", "additionalProperties": false,
+  "required": ["case_id", "verdict", "summary", "checks", "issues", "files_read", "limitations"],
+  "properties": {
+    "case_id": {"type": "string"}, "verdict": {"enum": ["accepted_unchanged", "accepted_with_corrections", "needs_followup"]}, "summary": {"type": "string"},
+    "checks": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["criterion", "evidence", "outcome"], "properties": {"criterion": {"type": "string"}, "evidence": {"$ref": "#/$defs/strings"}, "outcome": {"enum": ["satisfied", "corrected", "unresolved"]}}}},
+    "issues": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "kind", "importance", "draft_passage", "source_evidence", "reason", "correction", "resolved"], "properties": {"id": {"type": "string"}, "kind": {"enum": ["mathematical_error", "missing_justification", "source_route_departure", "boundary_change", "trace_misalignment", "sketch_mismatch", "presentation_only"]}, "importance": {"enum": ["substantive", "minor"]}, "draft_passage": {"type": "string"}, "source_evidence": {"$ref": "#/$defs/strings"}, "reason": {"type": "string"}, "correction": {"type": "string"}, "resolved": {"type": "boolean"}}}},
+    "files_read": {"$ref": "#/$defs/strings"}, "limitations": {"$ref": "#/$defs/strings"}
+  }, "$defs": {"strings": {"type": "array", "items": {"type": "string"}}}
+}

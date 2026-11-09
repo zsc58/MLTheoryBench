@@ -34,7 +34,7 @@ DEFAULT_PROMPT = Path(__file__).parent / "system_prompt.md"
 DEFAULT_RUBRIC_ONLY_PROMPT = Path(__file__).parent / "rubric_only_system_prompt.md"
 DEFAULT_SCHEMA = Path(__file__).parent / "output_schema.json"
 DEFAULT_RUNS_ROOT = WORKSPACE_ROOT / ".runtime/runs"
-DEFAULT_API_PROFILE = WORKSPACE_ROOT / ".runtime/get-codex"
+DEFAULT_API_PROFILE = WORKSPACE_ROOT.parent / ".venv/paperproof-config/model-suite/get-api"
 
 
 def evaluator_private_files(
@@ -811,10 +811,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Use the current local Codex login instead of an API profile.",
     )
-    parser.add_argument("--model")
+    parser.add_argument("--model", default="gpt-6-astra")
     parser.add_argument(
         "--reasoning-effort",
         choices=["none", "low", "medium", "high", "xhigh", "max"],
+        default="high",
     )
     parser.add_argument("--timeout-seconds", type=int, default=1800)
     parser.add_argument("--dry-run", action="store_true")

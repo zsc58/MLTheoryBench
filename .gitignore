@@ -1,50 +1,87 @@
-# ===== macOS / editor junk =====
-.DS_Store
-*.swp
-.idea/
-.vscode/
-.obsidian/workspace*.json
-.obsidian/cache
-
-# ===== Binary / regenerable source material =====
-*.pdf
-!reports/*.pdf
-*.docx
-记录.docx
-
-# ===== Anti-leakage: private dataset material must NEVER reach a remote =====
-# Keep these ignored even if a future dataset layout reuses the legacy paths.
-data/papers/**/private_source/
-data/papers/**/private_gt/
-
-# ===== Large / regenerable experiment outputs =====
-experiments/runs/*
-!experiments/runs/README.md
-!experiments/runs/_template/
-!experiments/runs/_template/**
-scratch/
-
-# ===== Local experiment provider credentials =====
-experiments/.runtime/
-
-# ===== Local Codex API profiles and credentials =====
-data/ml-theory-benchmark-skill/.runtime/
-
-# ===== Local project history and private audit archive =====
-project_history/
-.cleanup_quarantine/
-
-# Local private raw archives. Keep the data/ path itself available for a future
-# de-identified public release.
-/data/PaperProof_*_raw_*.zip
-/data/PaperProof_*_raw_*.zip.sha256
-
-# ===== Python (when scripts arrive) =====
-__pycache__/
-*.pyc
+# Local credentials and environments
 .venv/
 venv/
-.ipynb_checkpoints/
+.env
+*.env
+!*.env.example
+**/openai_api_key
+**/api_key
+*.pem
+*.key
+auth.json
 
-# ===== Keep empty structural dirs (negated below) =====
-!**/.gitkeep
+# Experiment outputs, source papers, and historical records
+**/.runtime/
+**/runs/
+**/review_runs/
+**/private_source/
+**/private_gt/
+project_history/
+learning/
+archives/
+*.log
+*.zip
+*.tar
+*.tar.gz
+**/answer_for_evaluator.md
+**/solver_result.json
+**/result.json
+**/evaluation.json
+
+# Auxiliary datasets are not part of this release
+error_taxonomy/data/
+lean_judge_verification/data/ai4slt/
+lean_judge_verification/data/tlb/
+lean_judge_verification/data/imo/
+
+# Caches and editor files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.DS_Store
+.idea/
+.vscode/
+.obsidian/
+
+# Local reports and publication/build artifacts
+/reports/
+/output/
+/outputs/
+/tmp/
+/blog_v5_html/
+/index.html
+/CLAUDE.md
+/MLopenproblem project/
+
+# Internal migration notes and duplicated release instructions
+/workflow/legacy_comparison/EXTRACTION_AND_CHANGES.md
+/workflow/evaluation/PROMPT_SCHEMA_COMPARISON.md
+/workflow/evaluation/RELEASED_DATA.md
+
+# Source-paper snapshots and auxiliary construction evidence
+lean_judge_verification/research/public_snapshot*/
+lean_judge_verification/research/source_pilot*/
+lean_judge_verification/research/informalization_survey*/
+
+# Only the approved benchmark artifacts belong under data/
+/data/*
+!/data/README.md
+!/data/manifest.json
+!/data/tasks/
+!/data/references/
+/data/tasks/*
+!/data/tasks/paper_2026_*/
+/data/tasks/paper_2026_*/*
+!/data/tasks/paper_2026_*/task.md
+/data/references/*
+!/data/references/paper_2026_*/
+/data/references/paper_2026_*/*
+!/data/references/paper_2026_*/proof_ground_truth.md
+!/data/references/paper_2026_*/rubric.md
+
+# Keep Lean support prompts/policy, not its separate datasets
+/lean_judge_verification/data/*
+!/lean_judge_verification/data/reviewer.md
+!/lean_judge_verification/data/reviewer.schema.json

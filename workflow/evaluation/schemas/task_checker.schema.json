@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "summary", "findings"],
+  "properties": {
+    "status": {"type": "string", "enum": ["no_issue_found", "issues_found", "inconclusive"]},
+    "summary": {"type": "string"},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "artifact", "severity", "location", "reason", "counterexample_or_evidence"],
+        "properties": {
+          "finding_id": {"type": "string"},
+          "artifact": {"type": "string", "enum": ["task", "proof_ground_truth", "both"]},
+          "severity": {"type": "string", "enum": ["minor", "major"]},
+          "location": {"type": "string"},
+          "reason": {"type": "string"},
+          "counterexample_or_evidence": {"type": "string"}
+        }
+      }
+    }
+  }
+}

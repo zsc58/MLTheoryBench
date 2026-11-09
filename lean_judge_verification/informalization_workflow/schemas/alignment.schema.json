@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object", "additionalProperties": false,
+  "required": ["case_id", "target", "state_basis", "contract", "definitions", "expanded_results", "background_lemmas", "proof_blocks", "notation_changes", "unresolved_issues", "files_read", "attribution"],
+  "properties": {
+    "case_id": {"type": "string"}, "target": {"type": "string"}, "state_basis": {"const": "source_and_real_lean_tactic_traces"},
+    "contract": {"type": "object", "additionalProperties": false, "required": ["objects", "assumptions", "quantifiers", "conclusion", "source_refs"], "properties": {"objects": {"$ref": "#/$defs/strings"}, "assumptions": {"$ref": "#/$defs/strings"}, "quantifiers": {"type": "string"}, "conclusion": {"type": "string"}, "source_refs": {"$ref": "#/$defs/refs"}}},
+    "definitions": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["lean_name", "meaning", "source_refs"], "properties": {"lean_name": {"type": "string"}, "meaning": {"type": "string"}, "source_refs": {"$ref": "#/$defs/refs"}}}},
+    "expanded_results": {"$ref": "#/$defs/strings"},
+    "background_lemmas": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["id", "interface", "kind", "source_refs"], "properties": {"id": {"type": "string"}, "interface": {"type": "string"}, "kind": {"enum": ["general_background", "permitted_project_result"]}, "source_refs": {"$ref": "#/$defs/refs"}}}},
+    "proof_blocks": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false,
+      "required": ["id", "node_id", "before", "after", "operation", "conditions_checked", "source_refs", "trace_refs", "trace_coverage", "trace_note", "output_section"],
+      "properties": {"id": {"type": "string"}, "node_id": {"type": "string"}, "before": {"$ref": "#/$defs/strings"}, "after": {"type": "string"}, "operation": {"type": "string"}, "conditions_checked": {"$ref": "#/$defs/strings"}, "source_refs": {"$ref": "#/$defs/refs"}, "trace_refs": {"type": "array", "items": {"type": "object", "additionalProperties": false, "required": ["trace_file", "tactic_id"], "properties": {"trace_file": {"type": "string"}, "tactic_id": {"type": "string"}}}}, "trace_coverage": {"enum": ["states_attached", "source_only"]}, "trace_note": {"type": "string"}, "output_section": {"type": "string"}}}},
+    "notation_changes": {"$ref": "#/$defs/strings"}, "unresolved_issues": {"$ref": "#/$defs/strings"}, "files_read": {"$ref": "#/$defs/strings"}, "attribution": {"type": "string"}
+  },
+  "$defs": {"strings": {"type": "array", "items": {"type": "string"}}, "refs": {"type": "array", "minItems": 1, "items": {"type": "object", "additionalProperties": false, "required": ["file", "start_line", "end_line", "declaration"], "properties": {"file": {"type": "string"}, "start_line": {"type": "integer", "minimum": 1}, "end_line": {"type": "integer", "minimum": 1}, "declaration": {"type": "string"}}}}}
+}

@@ -18,7 +18,7 @@ from typing import Any
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKFLOW_ROOT = SCRIPT_DIR.parents[1]
 DEFAULT_API_PROFILE = (
-    WORKFLOW_ROOT / ".runtime/get-codex"
+    WORKFLOW_ROOT.parent / ".venv/paperproof-config/model-suite/get-api"
 )
 RESULT_LINE = re.compile(
     r"^(paper_[A-Za-z0-9_]+): ([a-z_]+); feedback=(\d+); "
@@ -302,7 +302,7 @@ async def run_batch(args: argparse.Namespace) -> int:
                     *command,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
-                    cwd=str(WORKSPACE_ROOT),
+                    cwd=str(WORKFLOW_ROOT),
                     env={**os.environ, "ML_THEORY_CODEX_BIN": str(args.codex_bin)},
                 )
                 try:
@@ -404,7 +404,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--python-bin", type=Path, default=Path(sys.executable))
     parser.add_argument("--api-profile", type=Path, default=DEFAULT_API_PROFILE)
     parser.add_argument("--codex-bin", required=True, type=Path)
-    parser.add_argument("--model", default="gpt-5.6-sol")
+    parser.add_argument("--model", default="gpt-6-astra")
     parser.add_argument("--reasoning-effort", default="high")
     parser.add_argument("--timeout-seconds", type=int, default=2400)
     parser.add_argument("--paper-attempts", type=int, default=2)

@@ -1,0 +1,335 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Conditional PaperProof Task Audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "status",
+    "explanation",
+    "affected_material_ids",
+    "source_issue_check",
+    "replacements",
+    "corrected_material_records",
+    "self_audit",
+    "gt_quality_warning"
+  ],
+  "properties": {
+    "status": {
+      "enum": [
+        "artifacts_verified",
+        "formalization_error_fixed",
+        "scoring_error_fixed",
+        "source_minor_issue_fixed",
+        "paper_issue_confirmed",
+        "invalid_objection"
+      ]
+    },
+    "explanation": {"type": "string", "minLength": 1},
+    "affected_material_ids": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^theory_[0-9]{3}$"}
+    },
+    "source_issue_check": {
+      "anyOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/source_issue_check"}
+      ]
+    },
+    "replacements": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/replacements"}]
+    },
+    "corrected_material_records": {
+      "anyOf": [
+        {"type": "null"},
+        {"type": "array", "items": {"$ref": "#/$defs/material_record"}}
+      ]
+    },
+    "self_audit": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/checks"}]
+    },
+    "gt_quality_warning": {
+      "anyOf": [{"type": "null"}, {"$ref": "#/$defs/gt_quality_warning"}]
+    }
+  },
+  "$defs": {
+    "gt_quality_warning": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["public_task_verified", "affected_checks", "unresolved_obligations"],
+      "properties": {
+        "public_task_verified": {"type": "boolean", "const": true},
+        "affected_checks": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"enum": ["self_containment", "validity"]}
+        },
+        "unresolved_obligations": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "source_issue_check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "complete_chain_context_checked",
+        "standing_assumptions_checked",
+        "counterexample_satisfies_complete_source_contract",
+        "local_clarification_or_repair_suffices",
+        "evidence"
+      ],
+      "properties": {
+        "complete_chain_context_checked": {"type": "boolean"},
+        "standing_assumptions_checked": {"type": "boolean"},
+        "counterexample_satisfies_complete_source_contract": {
+          "type": "boolean"
+        },
+        "local_clarification_or_repair_suffices": {"type": "boolean"},
+        "evidence": {"type": "string", "minLength": 1}
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence"],
+      "properties": {
+        "status": {"enum": ["pass", "fail"]},
+        "evidence": {"type": "string", "minLength": 1}
+      }
+    },
+    "checks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "definition_integrity",
+        "self_containment",
+        "source_fidelity",
+        "anti_leakage",
+        "contribution_fidelity",
+        "validity",
+        "scope"
+      ],
+      "properties": {
+        "definition_integrity": {"$ref": "#/$defs/check"},
+        "self_containment": {"$ref": "#/$defs/check"},
+        "source_fidelity": {"$ref": "#/$defs/check"},
+        "anti_leakage": {"$ref": "#/$defs/check"},
+        "contribution_fidelity": {"$ref": "#/$defs/check"},
+        "validity": {"$ref": "#/$defs/check"},
+        "scope": {"$ref": "#/$defs/check"}
+      }
+    },
+    "replacements": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "task_md",
+        "proof_ground_truth_md",
+        "rubric_md",
+        "provenance"
+      ],
+      "properties": {
+        "task_md": {"type": ["string", "null"]},
+        "proof_ground_truth_md": {"type": ["string", "null"]},
+        "rubric_md": {"type": ["string", "null"]},
+        "provenance": {
+          "anyOf": [
+            {"type": "null"},
+            {"$ref": "#/$defs/provenance"}
+          ]
+        }
+      }
+    },
+    "material_id": {
+      "type": "string",
+      "pattern": "^theory_[0-9]{3}$"
+    },
+    "repair": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "original_source",
+        "repaired_form",
+        "source_evidence",
+        "justification"
+      ],
+      "properties": {
+        "original_source": {"type": "string", "minLength": 1},
+        "repaired_form": {"type": "string", "minLength": 1},
+        "source_evidence": {"type": "string", "minLength": 1},
+        "justification": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_line", "end_line", "label"],
+      "properties": {
+        "start_line": {"type": "integer", "minimum": 1},
+        "end_line": {"type": "integer", "minimum": 1},
+        "label": {"type": "string", "minLength": 1}
+      }
+    },
+    "material_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "item_id",
+        "role",
+        "source_label",
+        "recovered_content",
+        "proof_reconstruction",
+        "statement_status",
+        "statement_findings",
+        "statement_repair",
+        "proof_status",
+        "proof_findings",
+        "proof_repair",
+        "external_classification",
+        "source_spans",
+        "statement_source_locations",
+        "proof_source_locations",
+        "depends_on",
+        "is_added",
+        "addition_reason"
+      ],
+      "properties": {
+        "item_id": {"$ref": "#/$defs/material_id"},
+        "role": {
+          "enum": [
+            "theory_candidate",
+            "internal_support",
+            "definition",
+            "external"
+          ]
+        },
+        "source_label": {"type": "string", "minLength": 1},
+        "recovered_content": {"type": "string", "minLength": 1},
+        "proof_reconstruction": {"type": ["string", "null"], "minLength": 1},
+        "statement_status": {
+          "type": ["string", "null"],
+          "enum": [null, "clean", "minor_issue", "major_issue"]
+        },
+        "statement_findings": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "statement_repair": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/repair"}]
+        },
+        "proof_status": {
+          "type": ["string", "null"],
+          "enum": [null, "clean", "minor_error", "major_gap"]
+        },
+        "proof_findings": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1}
+        },
+        "proof_repair": {
+          "anyOf": [{"type": "null"}, {"$ref": "#/$defs/repair"}]
+        },
+        "external_classification": {
+          "type": ["string", "null"],
+          "enum": [null, "standard_independent", "nonstandard_dependency"]
+        },
+        "source_spans": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"type": "string", "minLength": 1}
+        },
+        "statement_source_locations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/source_location"}
+        },
+        "proof_source_locations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/source_location"}
+        },
+        "depends_on": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/material_id"}
+        },
+        "is_added": {"type": "boolean"},
+        "addition_reason": {"type": ["string", "null"], "minLength": 1}
+      }
+    },
+    "transformation": {
+      "enum": [
+        "exact",
+        "notation_only",
+        "reordered",
+        "equivalent_restatement",
+        "standard_background"
+      ]
+    },
+    "public_clause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["clause_id", "kind", "source_material_ids", "transformation"],
+      "properties": {
+        "clause_id": {"type": "string", "pattern": "^clause_[0-9]{3}$"},
+        "kind": {"enum": ["definition", "primitive_assumption", "target"]},
+        "source_material_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/material_id"}
+        },
+        "transformation": {"$ref": "#/$defs/transformation"}
+      }
+    },
+    "private_proof_step": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["step_id", "source_material_ids"],
+      "properties": {
+        "step_id": {"type": "string", "pattern": "^step_[0-9]{3}$"},
+        "source_material_ids": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/material_id"}
+        }
+      }
+    },
+    "notation_entry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "public"],
+      "properties": {
+        "source": {"type": "string", "minLength": 1},
+        "public": {"type": "string", "minLength": 1}
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "public_clauses",
+        "private_proof_steps",
+        "notation_map",
+        "applied_source_repairs"
+      ],
+      "properties": {
+        "public_clauses": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/public_clause"}
+        },
+        "private_proof_steps": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/private_proof_step"}
+        },
+        "notation_map": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/notation_entry"}
+        },
+        "applied_source_repairs": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/material_id"}
+        }
+      }
+    }
+  }
+}

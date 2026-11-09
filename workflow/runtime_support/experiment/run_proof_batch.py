@@ -37,7 +37,7 @@ from proof_experiment.llm_solver.run_llm_baseline import (  # noqa: E402
 
 DEFAULT_DATA_ROOT = WORKSPACE_ROOT / "data"
 DEFAULT_RUNS_ROOT = WORKSPACE_ROOT / ".runtime/runs"
-DEFAULT_API_PROFILE = WORKSPACE_ROOT / ".runtime/get-codex"
+DEFAULT_API_PROFILE = WORKSPACE_ROOT.parent / ".venv/paperproof-config/model-suite/get-api"
 
 
 @dataclass(frozen=True)
@@ -65,7 +65,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--solver-env-file", type=Path, default=DEFAULT_ENV_FILE)
     parser.add_argument("--evaluator-api-profile", type=Path, default=DEFAULT_API_PROFILE)
     parser.add_argument("--codex-bin", default="codex")
-    parser.add_argument("--evaluator-model", default="gpt-5.6-terra")
+    parser.add_argument("--evaluator-model", default="gpt-6-astra")
     parser.add_argument(
         "--evaluator-reasoning-effort",
         choices=["none", "low", "medium", "high", "xhigh", "max"],

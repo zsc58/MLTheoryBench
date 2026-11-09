@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "paper_audit.schema.json",
+  "title": "PaperProof Paper-Level Source Audit",
+  "description": "Final private construction-time record for one paper. A persistent paper thread emits one combined finding/repair/result-impact audit per target, an optional targeted downstream propagation assessment, and one final paper-impact assessment.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "paper_id",
+    "paper_context",
+    "result_inventory",
+    "target_result_ids",
+    "issue_leads",
+    "result_audits",
+    "paper_impact_assessment",
+    "paper_open_questions"
+  ],
+  "properties": {
+    "schema_version": {"const": "paper_source_audit_v8"},
+    "paper_id": {"type": "string", "pattern": "^paper_2026_[0-9]{3,}$"},
+    "paper_context": {"$ref": "#/$defs/paperContext"},
+    "result_inventory": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/resultInventoryItem"}
+    },
+    "target_result_ids": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "issue_leads": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/issueLead"}
+    },
+    "result_audits": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "result_node_audit.schema.json"}
+    },
+    "propagation_audit": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "propagation_audit.schema.json"}
+      ]
+    },
+    "paper_impact_assessment": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/paperImpactAssessment"}
+      ]
+    },
+    "paper_open_questions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "locator"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "locations": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/location"}
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "kind", "path"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "kind": {
+          "enum": ["original_paper", "thread_a_turn3", "later_chain_leads", "other"]
+        },
+        "path": {"type": "string", "minLength": 3, "pattern": ".*[/\\\\].*"},
+        "fidelity": {
+          "enum": ["original_tex_or_html", "extracted_text", "ocr", "unknown"]
+        }
+      },
+      "allOf": [
+        {
+          "if": {"properties": {"kind": {"const": "original_paper"}}},
+          "then": {"required": ["fidelity"]}
+        }
+      ]
+    },
+    "paperContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["theory_topic", "sources"],
+      "properties": {
+        "theory_topic": {"type": "string", "minLength": 1},
+        "sources": {
+          "type": "array",
+          "minItems": 2,
+          "items": {"$ref": "#/$defs/source"}
+        }
+      }
+    },
+    "resultInventoryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_id",
+        "inventory_role",
+        "result_kind",
+        "source_label",
+        "statement_status",
+        "proof_status",
+        "depends_on",
+        "statement_locations",
+        "proof_locations"
+      ],
+      "properties": {
+        "result_id": {"type": "string", "minLength": 1},
+        "inventory_role": {
+          "enum": ["theory_candidate", "internal_support", "definition", "external"]
+        },
+        "result_kind": {
+          "enum": [
+            "theorem",
+            "lemma",
+            "proposition",
+            "corollary",
+            "definition",
+            "external_result",
+            "unnumbered_claim",
+            "result_chain"
+          ]
+        },
+        "source_label": {"type": "string", "minLength": 1},
+        "statement_status": {"type": "string", "minLength": 1},
+        "proof_status": {"type": "string", "minLength": 1},
+        "depends_on": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1},
+          "uniqueItems": true
+        },
+        "statement_locations": {"$ref": "#/$defs/locations"},
+        "proof_locations": {"$ref": "#/$defs/locations"}
+      }
+    },
+    "issueLead": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lead_id", "result_id", "origin", "claim"],
+      "properties": {
+        "lead_id": {"type": "string", "minLength": 1},
+        "result_id": {"type": "string", "minLength": 1},
+        "origin": {"enum": ["turn3_statement", "turn3_proof", "later_chain"]},
+        "claim": {"type": "string", "minLength": 1}
+      }
+    },
+    "paperImpactAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paper_impact_level",
+        "impact_summary",
+        "remaining_contribution_summary",
+        "primary_driver_result_id",
+        "evidence_locations"
+      ],
+      "properties": {
+        "paper_impact_level": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 4
+        },
+        "impact_summary": {"type": "string", "minLength": 1},
+        "remaining_contribution_summary": {"type": "string", "minLength": 1},
+        "primary_driver_result_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "evidence_locations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/location"}
+        }
+      }
+    }
+  }
+}

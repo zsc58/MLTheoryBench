@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "paper_impact_output.schema.json",
+  "title": "PaperProof Paper-Impact Summary Turn Output",
+  "description": "The single output of the final paper-summary turn. This turn may assess paper-level impact but may not create or modify result findings.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["paper_impact_assessment", "paper_open_questions"],
+  "properties": {
+    "paper_impact_assessment": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/paperImpactAssessment"}
+      ]
+    },
+    "paper_open_questions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "locator"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "paperImpactAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "paper_impact_level",
+        "impact_summary",
+        "remaining_contribution_summary",
+        "primary_driver_result_id",
+        "evidence_locations"
+      ],
+      "properties": {
+        "paper_impact_level": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 4
+        },
+        "impact_summary": {"type": "string", "minLength": 1},
+        "remaining_contribution_summary": {"type": "string", "minLength": 1},
+        "primary_driver_result_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "evidence_locations": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/location"}
+        }
+      }
+    }
+  }
+}

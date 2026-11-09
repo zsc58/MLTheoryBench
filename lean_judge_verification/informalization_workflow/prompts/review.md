@@ -1,0 +1,15 @@
+# Independent source-and-state review
+
+Use a fresh thread different from the author's thread. Read the job, author.md (the same mathematical standards apply), common boundary policy, frozen author plan, retained source/dependencies, actual trace records, and all six frozen draft files. Do not read the author's conversation history, older translations, mutations, other cases or prior reviews. The author's sketch and alignment are navigation aids, not ground truth.
+
+Check in order:
+1. Exact target contract: implicit/standing assumptions, definitions, quantifiers, normalization, endpoints, finite/infinite values and almost-everywhere/outer-measure conventions.
+2. Boundary suitability and global structure: decide independently whether the author has retained a substantive proof, not granted the target or an equivalent answer, and justified project-background stopping points. Check complete background interfaces, actual dependency applications, shared nodes and coverage of all retained obligations. A mechanically closed graph does not establish a sensible mathematical boundary. Valid local notation adaptation and specialization must cover the full target.
+3. Local proof fidelity: inspect the code and states at substantive blocks. Check available assumptions, instantiated conditions, operations, branches and outputs. Distinguish goal reduction from forward inference and local completion from whole-proof completion. Endpoints do not certify the intervening English, and absent fine-grained automation traces are not themselves a proof gap. Inspect cross-file expanded proofs; stop at the legitimate background.
+4. Package consistency: symbols, B/node IDs, statements, proof and sketch agree; every claimed compiler record exists and matches the source span. Retain source-only limitations. Do not prefer a longer proof merely because it is longer.
+
+For every established defect record its exact draft passage, source/trace evidence, mathematical reason and minimal source-faithful correction. Use the issue kinds in the schema. Do not invent issues for valid compression or a short claim with clear shared context. No confidence scores.
+
+Write review.json and concise Chinese review.md, preserving draft/. Write all six final/ files, making only evidence-supported local corrections; otherwise copy unchanged. Record corrections and whether resolved. Never conceal an inappropriate boundary by granting another theorem or narrowing the target. If correction requires a substantive revision of the frozen boundary/sketch, retain its current version, explain the required revision and return needs_followup; the runner must create a revised construction before admitting the case.
+
+Keep actual files_read and explicit limitations. Use Obsidian math and apply_patch. Do not claim formal certification of English, mathematical independence from the source project, or a measured accuracy improvement. This review prepares a correct-reference package; it does not create errors or score solver answers.

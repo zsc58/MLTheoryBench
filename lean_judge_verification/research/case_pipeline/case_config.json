@@ -1,0 +1,243 @@
+{
+  "schema_version": "1.0",
+  "sources": {
+    "ai4slt": {
+      "root": "research/source_pilot_20260908/ai4slt/source/lean-stat-learning-theory-d0f506f0a695018265dccb33bcb05e2f5ca1c876",
+      "revision": "d0f506f0a695018265dccb33bcb05e2f5ca1c876",
+      "repository": "https://github.com/YuanheZ/lean-stat-learning-theory",
+      "module_prefix": "SLT",
+      "toolchain_folder": "lean-4.32.0-darwin_aarch64"
+    },
+    "tlb": {
+      "root": "research/source_pilot_20260908/rlmeval/reference_source/testing-lower-bounds-0f09ff100a06a5e4542181514bfff74213ae126b",
+      "revision": "0f09ff100a06a5e4542181514bfff74213ae126b",
+      "repository": "https://github.com/remydegenne/testing-lower-bounds",
+      "module_prefix": "TestingLowerBounds",
+      "toolchain_folder": "lean-4.13.0-rc3-darwin_aarch64"
+    }
+  },
+  "cases": [
+    {
+      "id": "ai4slt/02_gaussian_concentration",
+      "source": "ai4slt",
+      "target": "GaussianLipConcen.gaussian_lipschitz_concentration",
+      "module": "SLT.GaussianLipConcen"
+    },
+    {
+      "id": "tlb/01_bayes_optimality",
+      "source": "tlb",
+      "target": "ProbabilityTheory.bayesRiskPrior_eq_of_hasGenBayesEstimator",
+      "module": "TestingLowerBounds.Testing.Risk"
+    },
+    {
+      "id": "tlb/02_kl_tensorization",
+      "source": "tlb",
+      "target": "ProbabilityTheory.kl_pi",
+      "module": "TestingLowerBounds.Divergences.KullbackLeibler.CondKL"
+    },
+    {
+      "id": "tlb/03_renyi_testing_bound",
+      "source": "tlb",
+      "target": "ProbabilityTheory.one_sub_exp_le_add_measure_mul_exp_max_renyiDiv",
+      "module": "TestingLowerBounds.Testing.RenyiChangeMeasure"
+    },
+    {
+      "id": "ai4slt/06_l1_covering",
+      "source": "ai4slt",
+      "target": "coveringNumber_l1Ball_le",
+      "module": "SLT.CoveringNumber"
+    },
+    {
+      "id": "ai4slt/08_efron_stein",
+      "source": "ai4slt",
+      "target": "efronStein",
+      "module": "SLT.EfronStein"
+    },
+    {
+      "id": "tlb/12_fdiv_marginal_contraction",
+      "source": "tlb",
+      "target": "ProbabilityTheory.le_fDiv_compProd",
+      "module": "TestingLowerBounds.FDiv.CompProd.CompProd"
+    },
+    {
+      "id": "ai4slt/09_gaussian_poincare",
+      "source": "ai4slt",
+      "target": "GaussianPoincare.gaussianPoincare",
+      "module": "SLT.GaussianPoincare.Limit"
+    },
+    {
+      "id": "tlb/13_fdiv_conditional_identity",
+      "source": "tlb",
+      "target": "ProbabilityTheory.fDiv_compProd_left",
+      "module": "TestingLowerBounds.FDiv.CondFDiv"
+    },
+    {
+      "id": "ai4slt/11_dudley_entropy_integral",
+      "source": "ai4slt",
+      "target": "dudley",
+      "module": "SLT.Dudley"
+    },
+    {
+      "id": "ai4slt/12_entropy_tensorization",
+      "source": "ai4slt",
+      "target": "SubAddEnt.entropy_subadditive",
+      "module": "SLT.GaussianLSI.SubAddEnt.Subadditivity"
+    },
+    {
+      "id": "ai4slt/14_gaussian_log_sobolev",
+      "source": "ai4slt",
+      "target": "GaussianLSI.gaussian_logSobolev_W12_pi",
+      "module": "SLT.GaussianLSI.TensorizedGLSI"
+    },
+    {
+      "id": "ai4slt/15_gaussian_sobolev_approximation",
+      "source": "ai4slt",
+      "target": "GaussianSobolev.exists_smooth_compactSupport_approx",
+      "module": "SLT.GaussianSobolevDense.Density"
+    },
+    {
+      "id": "ai4slt/16_hanson_wright",
+      "source": "ai4slt",
+      "target": "HansonWright.hanson_wright_inequality",
+      "module": "SLT.HansonWright"
+    },
+    {
+      "id": "ai4slt/19_lieb_trace_concavity",
+      "source": "ai4slt",
+      "target": "Matrix.lieb_inequality_hdp_5_4_8",
+      "module": "SLT.MatrixInfra.MatCalc"
+    },
+    {
+      "id": "ai4slt/20_matrix_bernstein",
+      "source": "ai4slt",
+      "target": "RMT.matrix_bernstein_inequality_hdp_all",
+      "module": "SLT.RMT.MatBern"
+    },
+    {
+      "id": "ai4slt/13_bernoulli_log_sobolev",
+      "source": "ai4slt",
+      "target": "BernoulliLSI.bernoulli_logSobolev",
+      "module": "SLT.GaussianLSI.BernoulliLSI"
+    },
+    {
+      "id": "ai4slt/25_sample_covariance_expectation",
+      "source": "ai4slt",
+      "target": "RMT.sampleCovarianceDeviationOperatorNorm_expectation_hdp_bound_of_pos",
+      "module": "SLT.RMT.Basic"
+    },
+    {
+      "id": "ai4slt/27_rectangular_matrix_tail",
+      "source": "ai4slt",
+      "target": "RMT.matrixOperatorNorm_tail_le_of_max_psi2",
+      "module": "SLT.RMT.Basic"
+    },
+    {
+      "id": "tlb/18_statistical_information_positive_part",
+      "source": "tlb",
+      "target": "ProbabilityTheory.toReal_statInfo_eq_integral_max_of_le",
+      "module": "TestingLowerBounds.Divergences.StatInfo.StatInfo"
+    },
+    {
+      "id": "ai4slt/34_one_dimensional_gaussian_log_sobolev",
+      "source": "ai4slt",
+      "target": "GaussianLSI.gaussian_logSobolev_CompSmo",
+      "module": "SLT.GaussianLSI.OneDimGLSICompSmo"
+    },
+    {
+      "id": "tlb/14_fdiv_add_measure_bound",
+      "source": "tlb",
+      "target": "ProbabilityTheory.fDiv_add_measure_le",
+      "module": "TestingLowerBounds.FDiv.Basic"
+    },
+    {
+      "id": "tlb/04_binary_deterministic_optimality",
+      "source": "tlb",
+      "target": "ProbabilityTheory.bayesBinaryRisk_eq_iInf_measurableSet",
+      "module": "TestingLowerBounds.Testing.Binary"
+    },
+    {
+      "id": "tlb/05_kl_mass_lower_bound",
+      "source": "tlb",
+      "target": "ProbabilityTheory.kl_ge_mul_log",
+      "module": "TestingLowerBounds.Divergences.KullbackLeibler.KullbackLeibler"
+    },
+    {
+      "id": "ai4slt/10_entropy_duality",
+      "source": "ai4slt",
+      "target": "LogSobolev.entropy_duality",
+      "module": "SLT.GaussianLSI.DualityEntropy"
+    },
+    {
+      "id": "ai4slt/23_truncated_dudley",
+      "source": "ai4slt",
+      "target": "truncated_dudley_entropy_bound",
+      "module": "SLT.TDudley"
+    },
+    {
+      "id": "tlb/15_hellinger_duality",
+      "source": "tlb",
+      "target": "ProbabilityTheory.hellingerDiv_symm'",
+      "module": "TestingLowerBounds.Divergences.Hellinger"
+    },
+    {
+      "id": "ai4slt/05_euclidean_covering",
+      "source": "ai4slt",
+      "target": "coveringNumber_euclideanBall_le",
+      "module": "SLT.CoveringNumber"
+    },
+    {
+      "id": "ai4slt/28_l1_design_covering",
+      "source": "ai4slt",
+      "target": "LeastSquares.l1BallImage_coveringNumber_le",
+      "module": "SLT.LeastSquares.L1Regression.L1CoveringBound"
+    },
+    {
+      "id": "ai4slt/18_davis_kahan_subspaces",
+      "source": "ai4slt",
+      "target": "LinearMap.IsSymmetric.davisKahan_spectralProjection_centered",
+      "module": "SLT.MatrixInfra.Perturb"
+    },
+    {
+      "id": "tlb/08_fdiv_embedding_invariance",
+      "source": "tlb",
+      "target": "ProbabilityTheory.fDiv_map_measurableEmbedding",
+      "module": "TestingLowerBounds.FDiv.Basic"
+    },
+    {
+      "id": "tlb/10_likelihood_ratio_change_measure",
+      "source": "tlb",
+      "target": "ProbabilityTheory.measure_sub_le_measure_mul_exp",
+      "module": "TestingLowerBounds.Testing.ChangeMeasure"
+    },
+    {
+      "id": "tlb/27_joint_radon_nikodym_product",
+      "source": "tlb",
+      "target": "ProbabilityTheory.Kernel.rnDeriv_measure_compProd",
+      "module": "TestingLowerBounds.ForMathlib.RadonNikodym"
+    },
+    {
+      "id": "tlb/17_conditional_kl_chain_rule",
+      "source": "tlb",
+      "target": "ProbabilityTheory.condKL_compProd_kernel",
+      "module": "TestingLowerBounds.Divergences.KullbackLeibler.CondKL"
+    },
+    {
+      "id": "tlb/28_radon_nikodym_conditional_expectation",
+      "source": "tlb",
+      "target": "MeasureTheory.Measure.toReal_rnDeriv_map",
+      "module": "TestingLowerBounds.ForMathlib.RnDeriv"
+    },
+    {
+      "id": "tlb/16_bayesian_inverse_composition",
+      "source": "tlb",
+      "target": "ProbabilityTheory.bayesInv_comp",
+      "module": "TestingLowerBounds.Kernel.BayesInv"
+    },
+    {
+      "id": "ai4slt/35_courant_fischer_max_min",
+      "source": "ai4slt",
+      "target": "LinearMap.IsSymmetric.eigenvalues_eq_courantFischerMaxMin_succ",
+      "module": "SLT.MatrixInfra.CourantFischer"
+    }
+  ]
+}

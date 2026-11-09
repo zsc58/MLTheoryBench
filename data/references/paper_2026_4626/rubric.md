@@ -1,0 +1,29 @@
+# Scoring Guide
+
+- **0:** No correct idea or relevant valid method.
+- **1-2:** Nontrivial relevant ideas, but no complete correct proof step or useful conclusion.
+- **3-7:** Some correct core steps or conclusions, but important steps are missing.
+- **8-9:** Complete and essentially correct, with only readily repairable errors or omitted cases.
+- **10:** Fully correct.
+
+# Core Steps
+
+1. **Loss reduction and observation model (2 points).** Derives and correctly uses the absolute-value mixture representation, including endpoint masses and a valid CDF, or supplies a valid alternative reduction. Explains cancellation of additive constants. Does not replace a revealed general convex loss by an actually observed V-location without justification. Preserves the distinction between the current committed action distribution and the later action draw.
+
+2. **Multi-scale probabilistic bottleneck (4 points).** Establishes the relevant distribution-dependent geometry and a quantitative aggregate regret bound. For the reference route, the scale-r prediction grid has spacing r; the width construction must cover atoms and endpoints; empty groups contribute zero. Proves simultaneous tail control with the relevant group counts and carries out the heavy/light calculation: heavy groups contribute O(γ times their count), light groups contribute O(Trγ/log T), and the sum is O(Tγ). Mere mentions of binning, concentration, or a heavy/light split do not establish these estimates. The median used for realized group regret is a median of the empirical mixture of its losses, not necessarily a median of an individual round's distribution.
+
+3. **Original-order justification (2 points).** Establishes a strategy whose distribution is selected before the current loss, with an analysis valid for adaptive losses and the committed conditional sampling law. The direct efficient construction may do this through per-round constraint feasibility, finite minimax, online constraint weighting, and realized martingale deviations; a separate full-game minimax transfer is not mandatory for such a complete proof. If a full-game transfer is used, specify finite strategy spaces, the terminal payoff being minimized, behavioral realization, and a valid virtual-transcript discretization. Minimax applied only to expected regret does not automatically transfer a high-probability claim. A nonconstructive transfer alone does not prove polynomial-time implementation.
+
+4. **Efficient implementation and final rates (2 points).** Justifies polynomial computation of the chosen distributions and all updates, including how the required information is obtained from revealed losses. Establishes the individual constraint control actually used by the proof. The reference now does this with explicit positive product weights over finitely many learning rates: the LP ensures nonpositive weighted reward, total potential does not increase, and the logarithmic update estimate gives O(log T+sqrt(log T times the individual squared-reward sum)). A valid independently justified expert algorithm or a different sufficient construction is equally acceptable. Includes both terms of Freedman-type bounds where necessary. Derives the expected bound by choosing δ=1/T and using SR_T≤T. Handles T=2 and confidence values for which the requested bound is already at least a constant multiple of T.
+
+# Evaluator Notes
+
+Accept any complete valid alternative proof under the public task. Do not require the reference proof's incidental notation, a particular dyadic tie rule, or specific concentration constants. Do not require the algorithm to be confidence-independent: δ is an input fixed before play. Conversely, do not claim that a bound for one tuned strategy establishes all confidence levels for that same strategy.
+
+The finite threshold reduction must preserve open interval cells as well as equality at thresholds when strict and weak comparisons both occur. A signed constraint sum needs an upper bound; a two-sided absolute bound is neither supplied by the relevant argument nor needed. Retain the additive logarithmic term in count concentration for small expected counts. Do not accept an adaptive discretization comparison that silently assumes the same predictor follows the same action sequence after its feedback changes.
+
+Revision 1 correctly disclosed a theorem-critical gap at its specialized expert invocation. The present reference closes the needed obligation by a directly proved, polynomial-time constraint-weighting procedure. Its proof uses the LP-derived condition that weighted reward is nonpositive on every round. It does not establish, and does not need, the stronger standalone MsMwC guarantee for arbitrary reward sequences. Do not require a solver to prove that unused stronger theorem when the solver supplies the sufficient individual constraint bounds by another valid method.
+
+Conversely, a solver who does rely on the specialized general expert result must justify that dependency rather than merely name MsMwC or quote the desired bound. Agreement with an earlier incomplete reference proof is not proof of the omitted step. A potential argument must specify its online weights and updates, prove the required invariant, choose its learning rates, and show polynomial implementation; assuming the invariant without deriving it from the actual protocol is insufficient.
+
+Only standard-independent results whose relevant statements are supplied and whose hypotheses are verified may close an obligation without a derivation in the answer. Distinguish such uses from unsupported specialized algorithmic claims. Assess complete alternative proofs on their mathematics rather than automatically imposing an auxiliary step from the reference architecture. No unresolved private-reference-proof warning remains for the current replacement.

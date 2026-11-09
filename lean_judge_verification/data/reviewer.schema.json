@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Natural-language proof review (draft)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["case_id", "submission_id", "verdict", "findings", "unverified_external_results"],
+  "properties": {
+    "case_id": {"$ref": "#/$defs/text"},
+    "submission_id": {"$ref": "#/$defs/text"},
+    "verdict": {"enum": ["error_found", "no_error_found"]},
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["finding_id", "category", "location", "quoted_text", "explanation"],
+        "properties": {
+          "finding_id": {"type": "string", "pattern": "^F[1-9][0-9]*$"},
+          "category": {"enum": ["proof_obligation", "inference", "calculation", "typo"]},
+          "location": {"$ref": "#/$defs/text"},
+          "quoted_text": {"$ref": "#/$defs/text"},
+          "explanation": {"$ref": "#/$defs/text"}
+        }
+      }
+    },
+    "unverified_external_results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "location", "claimed_use", "missing_information"],
+        "properties": {
+          "name": {"$ref": "#/$defs/text"},
+          "location": {"$ref": "#/$defs/text"},
+          "claimed_use": {"$ref": "#/$defs/text"},
+          "missing_information": {"$ref": "#/$defs/text"}
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"verdict": {"const": "error_found"}}},
+      "then": {
+        "properties": {
+          "findings": {
+            "contains": {
+              "type": "object",
+              "required": ["category"],
+              "properties": {"category": {"enum": ["proof_obligation", "inference", "calculation"]}}
+            }
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "findings": {"items": {"properties": {"category": {"const": "typo"}}}}
+        }
+      }
+    }
+  ],
+  "$defs": {"text": {"type": "string", "minLength": 1}}
+}

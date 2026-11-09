@@ -1,6 +1,6 @@
 # AGENTS.md
 
-ML Theory Agent Evaluation
+MLTheoryBench
 
 ## Goal
 Test whether AI agents (Codex-based harness) can solve ML-theory problems, and build a
@@ -53,6 +53,7 @@ Three parts:
   `git commit`, `git commit --amend`, `git push`) but must NEVER execute them itself. Codex may
   run read-only git (status, diff, log) and stage edits via the file tools, then hand the user
   the exact commit command to run.
-- VM experiments use Get-Codex with `gpt-5.6-sol` and `high` reasoning by default. Use a
-  different VM model or reasoning effort only when the user explicitly requests an override.
+- Non-solver experiment stages use Get API (`https://api.get-apikey.com/v1`) with
+  `gpt-6-astra` and `high` reasoning by default. The sibling `workflow/evaluation/` defines
+  formal/test solver sets; private profiles live in `../.venv/paperproof-config/model-suite/`.
 - Reproduction commands are documented in `README.md`.

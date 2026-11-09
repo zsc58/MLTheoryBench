@@ -1,0 +1,224 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Paired ML Theory Proof Validity Reports",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "answer_reports"
+  ],
+  "properties": {
+    "answer_reports": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 8,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "answer_id",
+          "report"
+        ],
+        "properties": {
+          "answer_id": {
+            "type": "string",
+            "pattern": "^answer_[a-h]$"
+          },
+          "report": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "validity_status",
+              "theorem_contract",
+              "proof_steps",
+              "findings",
+              "adversarial_checks",
+              "summary"
+            ],
+            "properties": {
+              "validity_status": {
+                "type": "string",
+                "enum": [
+                  "valid_complete",
+                  "valid_with_minor_issue",
+                  "incomplete_major_gap",
+                  "target_suspected_invalid"
+                ]
+              },
+              "theorem_contract": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "assumptions",
+                  "target",
+                  "quantifiers_and_scope"
+                ],
+                "properties": {
+                  "assumptions": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  },
+                  "target": {
+                    "type": "string"
+                  },
+                  "quantifiers_and_scope": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "proof_steps": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "step_id",
+                    "claim",
+                    "depends_on",
+                    "support_status",
+                    "reason"
+                  ],
+                  "properties": {
+                    "step_id": {
+                      "type": "string"
+                    },
+                    "claim": {
+                      "type": "string"
+                    },
+                    "depends_on": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      },
+                      "description": "IDs from proof_steps.step_id only; use an empty array when the step has no predecessor proof step. Do not list assumptions or background facts here."
+                    },
+                    "support_status": {
+                      "type": "string",
+                      "enum": [
+                        "established",
+                        "partial",
+                        "unsupported",
+                        "incorrect"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "findings": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "finding_id",
+                    "location",
+                    "kind",
+                    "status",
+                    "severity",
+                    "description",
+                    "effect_on_proof"
+                  ],
+                  "properties": {
+                    "finding_id": {
+                      "type": "string"
+                    },
+                    "location": {
+                      "type": "string"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "unsupported_assumption",
+                        "invalid_implication",
+                        "missing_derivation",
+                        "incorrect_standard_result",
+                        "scope_or_mode_upgrade",
+                        "boundary_case",
+                        "calculation_error",
+                        "target_counterexample",
+                        "other"
+                      ]
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "verified",
+                        "candidate",
+                        "resolved_nonissue"
+                      ]
+                    },
+                    "severity": {
+                      "type": "string",
+                      "enum": [
+                        "blocking",
+                        "major",
+                        "minor",
+                        "none"
+                      ]
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "effect_on_proof": {
+                      "type": "string"
+                    }
+                  }
+                }
+              },
+              "adversarial_checks": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": [
+                    "target",
+                    "test",
+                    "result",
+                    "reason",
+                    "related_finding_ids"
+                  ],
+                  "properties": {
+                    "target": {
+                      "type": "string"
+                    },
+                    "test": {
+                      "type": "string"
+                    },
+                    "result": {
+                      "type": "string",
+                      "enum": [
+                        "break_found",
+                        "concern_unresolved",
+                        "attack_neutralized",
+                        "not_applicable"
+                      ]
+                    },
+                    "reason": {
+                      "type": "string"
+                    },
+                    "related_finding_ids": {
+                      "type": "array",
+                      "items": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              },
+              "summary": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

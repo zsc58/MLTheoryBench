@@ -1,0 +1,4 @@
+{
+  "workers_per_judge": 5,
+  "reason": "User-approved reduction after persistent campus API parallel-request throttling. Completed scores and accepted reviewers are reused."
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "result_node_review.schema.json",
+  "title": "PaperProof Dual-Audit Result Review",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["result_audit", "proposal_reviews"],
+  "properties": {
+    "result_audit": {"$ref": "result_node_audit.schema.json"},
+    "proposal_reviews": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["candidate_ids", "verdict", "final_ids", "explanation", "locations"],
+        "properties": {
+          "candidate_ids": {"type": "array", "minItems": 1, "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "verdict": {"enum": ["retained", "rejected", "indeterminate"]},
+          "final_ids": {"type": "array", "uniqueItems": true, "items": {"type": "string", "minLength": 1}},
+          "explanation": {"type": "string", "minLength": 1},
+          "locations": {"type": "array", "minItems": 1, "items": {"$ref": "result_node_audit.schema.json#/$defs/location"}}
+        }
+      }
+    }
+  }
+}

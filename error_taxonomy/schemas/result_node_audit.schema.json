@@ -1,0 +1,393 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "result_node_audit.schema.json",
+  "title": "PaperProof Lean Result-Node Source Audit",
+  "description": "Per-turn mathematical audit output for one result node inside a persistent paper session. The same turn identifies atomic source-error findings, assesses each finding's repair difficulty, and assesses the result node's overall impact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "result_id",
+    "audit_status",
+    "contract",
+    "lead_adjudications",
+    "theorem_failure",
+    "findings",
+    "dependencies",
+    "result_impact_assessment",
+    "open_questions"
+  ],
+  "properties": {
+    "audit_status": {
+      "enum": ["assessed", "rejected_missing_proof_source"],
+      "description": "Resource eligibility, not mathematical correctness. Reject only when the supplied resources contain no proof or identifiable proof argument for this result because the proof source is missing. Explain and locate the missing resource in existing open_questions and lead_adjudications; rejected nodes have no findings, failure witnesses, dependencies, or impact assessment."
+    },
+    "result_id": {"type": "string", "minLength": 1},
+    "contract": {"$ref": "#/$defs/contract"},
+    "lead_adjudications": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/leadAdjudication"}
+    },
+    "theorem_failure": {"$ref": "#/$defs/theoremFailure"},
+    "findings": {"$ref": "#/$defs/proofFindings"},
+    "dependencies": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/dependency"}
+    },
+    "result_impact_assessment": {
+      "oneOf": [
+        {"type": "null"},
+        {"$ref": "#/$defs/resultImpactAssessment"}
+      ]
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "location": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "locator"],
+      "properties": {
+        "source_id": {"type": "string", "minLength": 1},
+        "locator": {"type": "string", "minLength": 1}
+      }
+    },
+    "locations": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/location"}
+    },
+    "stringArray": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "nonemptyStringArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1},
+      "uniqueItems": true
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["quantified_domain", "assumptions", "conclusion", "statement_objects"],
+      "properties": {
+        "quantified_domain": {"$ref": "#/$defs/stringArray"},
+        "assumptions": {"$ref": "#/$defs/stringArray"},
+        "conclusion": {"type": "string", "minLength": 1},
+        "statement_objects": {"$ref": "#/$defs/stringArray"}
+      }
+    },
+    "leadAdjudication": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lead_id", "verdict", "explanation", "locations"],
+      "properties": {
+        "lead_id": {"type": "string", "minLength": 1},
+        "verdict": {
+          "enum": [
+            "confirmed",
+            "partially_confirmed",
+            "rejected_by_controlling_context",
+            "rejected_as_artifact",
+            "rejected_other",
+            "indeterminate"
+          ]
+        },
+        "explanation": {"type": "string", "minLength": 1},
+        "locations": {"$ref": "#/$defs/locations"}
+      }
+    },
+    "witness": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "construction",
+        "assumption_checks",
+        "failed_contract_component",
+        "verification_method",
+        "locations"
+      ],
+      "properties": {
+        "construction": {"type": "string", "minLength": 1},
+        "assumption_checks": {"$ref": "#/$defs/nonemptyStringArray"},
+        "failed_contract_component": {"type": "string", "minLength": 1},
+        "verification_method": {
+          "enum": ["exact_analytic", "computer_assisted_exact"]
+        },
+        "locations": {"$ref": "#/$defs/locations"}
+      }
+    },
+    "counterexample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "counterexample_id",
+        "construction",
+        "assumption_checks",
+        "failed_contract_component",
+        "verification_method",
+        "locations"
+      ],
+      "properties": {
+        "counterexample_id": {"type": "string", "minLength": 1},
+        "construction": {"type": "string", "minLength": 1},
+        "assumption_checks": {"$ref": "#/$defs/nonemptyStringArray"},
+        "failed_contract_component": {"type": "string", "minLength": 1},
+        "verification_method": {
+          "enum": ["exact_analytic", "computer_assisted_exact"]
+        },
+        "locations": {"$ref": "#/$defs/locations"}
+      }
+    },
+    "repairAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "repair_difficulty_level",
+        "selected_honest_repair",
+        "level_rationale"
+      ],
+      "properties": {
+        "repair_difficulty_level": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 4
+        },
+        "selected_honest_repair": {"type": "string", "minLength": 1},
+        "level_rationale": {"type": "string", "minLength": 1}
+      }
+    },
+    "statementObjectFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "subtype",
+        "error_statement",
+        "mathematical_reason",
+        "locations",
+        "related_lead_ids",
+        "assessed_after_repairing",
+        "repair_assessment",
+        "invalidity_witness"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "subtype": {
+          "enum": [
+            "undefined_or_nonfinite_statement_object",
+            "type_structure_or_representation_invalidity",
+            "feasible_object_solution_or_witness_nonexistence",
+            "extremum_optimizer_or_selection_nonattainment"
+          ]
+        },
+        "error_statement": {"type": "string", "minLength": 1},
+        "mathematical_reason": {"type": "string", "minLength": 1},
+        "locations": {"$ref": "#/$defs/locations"},
+        "related_lead_ids": {"$ref": "#/$defs/stringArray"},
+        "assessed_after_repairing": {"$ref": "#/$defs/stringArray"},
+        "repair_assessment": {"$ref": "#/$defs/repairAssessment"},
+        "invalidity_witness": {"$ref": "#/$defs/witness"}
+      }
+    },
+    "proofObligationFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "subtype",
+        "error_statement",
+        "mathematical_reason",
+        "locations",
+        "related_lead_ids",
+        "assessed_after_repairing",
+        "repair_assessment",
+        "extra_conditions",
+        "supported_conclusion",
+        "missing_obligation"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "subtype": {
+          "enum": [
+            "omitted_component_term_or_branch",
+            "endpoint_boundary_or_degenerate_case_uncovered",
+            "parameter_dimension_or_asymptotic_regime_uncovered",
+            "terminal_conclusion_or_critical_bridge_gap"
+          ]
+        },
+        "error_statement": {"type": "string", "minLength": 1},
+        "mathematical_reason": {"type": "string", "minLength": 1},
+        "locations": {"$ref": "#/$defs/locations"},
+        "related_lead_ids": {"$ref": "#/$defs/stringArray"},
+        "assessed_after_repairing": {"$ref": "#/$defs/stringArray"},
+        "repair_assessment": {"$ref": "#/$defs/repairAssessment"},
+        "extra_conditions": {"$ref": "#/$defs/stringArray"},
+        "supported_conclusion": {"type": "string", "minLength": 1},
+        "missing_obligation": {"type": "string", "minLength": 1}
+      }
+    },
+    "inferenceFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "subtype",
+        "error_statement",
+        "mathematical_reason",
+        "locations",
+        "related_lead_ids",
+        "assessed_after_repairing",
+        "repair_assessment",
+        "premises",
+        "claimed_inference"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "subtype": {
+          "enum": [
+            "theorem_lemma_or_rule_misapplication",
+            "invalid_logical_geometric_or_structural_inference",
+            "invalid_generalization_or_quantifier_shift",
+            "probability_conditioning_coupling_or_object_transfer",
+            "intermediate_domain_boundary_or_regime_overreach"
+          ]
+        },
+        "error_statement": {"type": "string", "minLength": 1},
+        "mathematical_reason": {"type": "string", "minLength": 1},
+        "locations": {"$ref": "#/$defs/locations"},
+        "related_lead_ids": {"$ref": "#/$defs/stringArray"},
+        "assessed_after_repairing": {"$ref": "#/$defs/stringArray"},
+        "repair_assessment": {"$ref": "#/$defs/repairAssessment"},
+        "premises": {"$ref": "#/$defs/nonemptyStringArray"},
+        "claimed_inference": {"type": "string", "minLength": 1}
+      }
+    },
+    "calculationFinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "finding_id",
+        "subtype",
+        "error_statement",
+        "mathematical_reason",
+        "locations",
+        "related_lead_ids",
+        "assessed_after_repairing",
+        "repair_assessment",
+        "displayed_expression",
+        "correct_recalculation"
+      ],
+      "properties": {
+        "finding_id": {"type": "string", "minLength": 1},
+        "subtype": {
+          "enum": [
+            "local_algebra_symbol_normalization_or_explicit_formula_omission",
+            "inequality_constant_or_probability_budget_error",
+            "scaling_dimension_or_sample_complexity_error",
+            "rate_exponent_remainder_or_asymptotic_balance_error"
+          ]
+        },
+        "error_statement": {"type": "string", "minLength": 1},
+        "mathematical_reason": {"type": "string", "minLength": 1},
+        "locations": {"$ref": "#/$defs/locations"},
+        "related_lead_ids": {"$ref": "#/$defs/stringArray"},
+        "assessed_after_repairing": {"$ref": "#/$defs/stringArray"},
+        "repair_assessment": {"$ref": "#/$defs/repairAssessment"},
+        "displayed_expression": {"type": "string", "minLength": 1},
+        "correct_recalculation": {"type": "string", "minLength": 1}
+      }
+    },
+    "theoremFailure": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "statement_object_findings",
+        "other_global_counterexamples"
+      ],
+      "properties": {
+        "status": {
+          "description": "proven_erroneous iff at least one verified statement-object finding or other verified global counterexample is present; otherwise undetermined, never theorem-valid.",
+          "enum": ["proven_erroneous", "undetermined"]
+        },
+        "statement_object_findings": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/statementObjectFinding"}
+        },
+        "other_global_counterexamples": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/counterexample"}
+        }
+      }
+    },
+    "proofFindings": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["proof_obligation", "inference", "calculation"],
+      "properties": {
+        "proof_obligation": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/proofObligationFinding"}
+        },
+        "inference": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/inferenceFinding"}
+        },
+        "calculation": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/calculationFinding"}
+        }
+      }
+    },
+    "dependency": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream_result_id",
+        "use_status",
+        "use_locations",
+        "upstream_finding_ids",
+        "local_finding_ids",
+        "explanation"
+      ],
+      "properties": {
+        "upstream_result_id": {"type": "string", "minLength": 1},
+        "use_status": {
+          "enum": ["valid_use", "invalid_use", "inherited_blocker", "mixed", "indeterminate"]
+        },
+        "use_locations": {"$ref": "#/$defs/locations"},
+        "upstream_finding_ids": {"$ref": "#/$defs/stringArray"},
+        "local_finding_ids": {"$ref": "#/$defs/stringArray"},
+        "explanation": {"type": "string", "minLength": 1}
+      }
+    },
+    "resultImpactAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "result_impact_level",
+        "revised_result_summary",
+        "impact_explanation",
+        "primary_driver_finding_id"
+      ],
+      "properties": {
+        "result_impact_level": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 4
+        },
+        "revised_result_summary": {"type": "string", "minLength": 1},
+        "impact_explanation": {"type": "string", "minLength": 1},
+        "primary_driver_finding_id": {
+          "type": ["string", "null"],
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
