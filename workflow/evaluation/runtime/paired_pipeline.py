@@ -270,6 +270,41 @@ def has_final_answer(answer: str) -> bool:
     return bool(answer.strip(string.whitespace + string.punctuation))
 
 
+def record_submitted_answer(label: str, source: Path, output_dir: Path) -> dict[str, Any]:
+    output_dir.mkdir(parents=True, exist_ok=False)
+    answer = normalize_obsidian_markdown(source.read_text(encoding="utf-8"))
+    (output_dir / "answer.md").write_text(answer, encoding="utf-8")
+    proof, self_assessment = split_self_assessment(answer)
+    final_answer = has_final_answer(proof)
+    (output_dir / "answer_for_evaluator.md").write_text(
+        proof if final_answer else "", encoding="utf-8"
+    )
+    if self_assessment is not None:
+        (output_dir / "self_assessment.md").write_text(
+            self_assessment, encoding="utf-8"
+        )
+    atomic_write_json(output_dir / "submission.json", {
+        "source": str(source), "source_sha256": sha256_file(source),
+        "input_exposure": "external_unverified", "usage": "external_unreported",
+    })
+    result = {
+        "solver_label": label,
+        "model": "external_submission",
+        "solver_outcome": "final_answer" if final_answer else "no_final_answer",
+        "task_status": "not_requested" if final_answer else "no_final_answer",
+        "unscorable_reason": None,
+        "task_revision": 0,
+        "terminal_score": None if final_answer else 0,
+        "finish_reason": "external_submission",
+        "usage": None,
+        "answer_sha256": sha256_text(answer),
+        "proof_sha256": sha256_text(proof if final_answer else ""),
+        "stream": False,
+    }
+    atomic_write_json(output_dir / "solver_result.json", result)
+    return {**result, "proof": proof if final_answer else ""}
+
+
 def run_solver(
     spec: SolverSpec,
     bundle: ArtifactBundle,

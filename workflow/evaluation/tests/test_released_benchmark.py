@@ -99,6 +99,42 @@ class ReleasedDatasetTests(unittest.TestCase):
         self.assertEqual(result['stop_reason'], 'evaluator_unscorable')
         self.assertEqual(result['scores'], {})
 
+    def test_submitted_answer_scores_without_solver_call(self):
+        answer = Path(self.temp.name) / 'agent.md'
+        answer.write_text('# Solution\n\n## Full Proof\n\nA valid argument.\n\n'
+                          '## Self-Assessment\n\n- **Claimed score:** 10\n')
+        def evaluate(bundle, assignment, *args):
+            return {aid: {'evaluation_status': 'scored', 'score': 7}
+                    for aid in assignment}, None
+        output = Path(self.temp.name) / 'run'
+        with patch.object(release, 'run_all_solvers') as solver, \
+             patch.object(release, 'run_paired_reviewer', return_value=({}, None)), \
+             patch.object(release, 'run_paired_evaluator', side_effect=evaluate):
+            result = release.run_task(self.root, self.item, output, 'test',
+                                      [release.SolverSpec('agent', None)], None,
+                                      {'agent': answer})
+        solver.assert_not_called()
+        self.assertEqual(result['scores'], {'agent': 7})
+        model_dir = output / 'rounds/round_0/models/agent'
+        self.assertEqual((model_dir / 'answer.md').read_text(), answer.read_text())
+        self.assertNotIn('Self-Assessment', (model_dir / 'answer_for_evaluator.md').read_text())
+        self.assertEqual(json.loads((model_dir / 'submission.json').read_text())
+                         ['input_exposure'], 'external_unverified')
+
+    def test_submitted_empty_proof_skips_judges(self):
+        answer = Path(self.temp.name) / 'agent.md'
+        answer.write_text('## Self-Assessment\n\n- **Claimed score:** 10\n')
+        with patch.object(release, 'run_all_solvers') as solver, \
+             patch.object(release, 'run_paired_reviewer') as reviewer, \
+             patch.object(release, 'run_paired_evaluator') as evaluator:
+            result = release.run_task(self.root, self.item, Path(self.temp.name) / 'run',
+                                      'test', [release.SolverSpec('agent', None)], None,
+                                      {'agent': answer})
+        self.assertEqual(result['scores'], {'agent': 0})
+        solver.assert_not_called()
+        reviewer.assert_not_called()
+        evaluator.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()

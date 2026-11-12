@@ -27,6 +27,22 @@ Repeat `--paper-id` to select tasks, use `--all` for the full dataset, and set `
 
 Use a fresh output directory for each run. The runner verifies Task, GT, and Rubric hashes before solving and keeps these files frozen. Runtime provenance records the dataset and task ID; the released Task, GT, and Rubric define the mathematical scoring inputs.
 
+## Evaluate External Answers
+
+Run your agent separately on `data/tasks/<paper_id>/task.md`, using the shared [Solver instructions](prompts/frozen_solver_system_prompt.md) and [answer template](prompts/frozen_solver_answer_template.md). Save its Markdown answer outside `data/`. Then score it without invoking a Solver:
+
+```bash
+python workflow/run.py evaluate-answers \
+  --data-root data --paper-id paper_2026_001 \
+  --answer my_agent=/absolute/path/answer.md \
+  --judge-api-profile /absolute/path/codex-judge-profile \
+  --run-id my_agent_001 --run-root .runtime/my_agent_001
+```
+
+Repeat `--answer` to compare up to eight submissions on the same tasks. For multiple `--paper-id` values or `--all`, each `--answer LABEL=PATH` must point to a directory containing one `<paper_id>.md` file per selected task. `--dry-run` validates the dataset and answer paths without calling a model. The command uses the existing anonymous Reviewer and Reference Evaluator and writes the same score reports as `evaluate`. An empty proof receives zero; `Self-Assessment` is saved but excluded from judging.
+
+External answer provenance and token usage cannot be verified by this runner. To preserve the benchmark's closed-book protocol, the external agent must see only the public task and common instructions, with no access to `data/references/`, source papers, retrieval, or network tools. The 48,000-token completion limit must be enforced by the external agent. The scoring stages still require a configured Codex CLI judge.
+
 ## Model Configuration
 
 [`config/model_suite.json`](config/model_suite.json) defines the seven Solver profiles used in the experiments. Agent stages use `gpt-6-astra` with `high` reasoning effort. Edit the model configuration or supply custom profiles to select models and providers.

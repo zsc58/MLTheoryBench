@@ -14,7 +14,7 @@ from agent_call import AgentConfig
 from bare_model import ProviderConfig, public_config
 from model_profiles import DEFAULT_PROFILES_DIR, load_suite, solver_profiles
 from paired_pipeline import (
-    ArtifactBundle, SolverSpec, anonymous_assignment, run_all_solvers,
+    ArtifactBundle, SolverSpec, anonymous_assignment, record_submitted_answer, run_all_solvers,
     run_paired_reviewer, run_paired_evaluator,
 )
 from run_comparison import build_summary, recover_recorded_usage, solver_spec
@@ -71,7 +71,8 @@ def copy_bundle(root: Path, item: dict, destination: Path) -> ArtifactBundle:
 
 
 def run_task(root: Path, item: dict, output: Path, run_id: str,
-             specs: list[SolverSpec], judge: AgentConfig) -> dict:
+             specs: list[SolverSpec], judge: AgentConfig,
+             submitted: dict[str, Path] | None = None) -> dict:
     started = time.monotonic()
     output.mkdir(parents=True, exist_ok=False)
     state = {'paper_id': item['paper_id'], 'prc': item['prc'], 'status': 'running',
@@ -81,7 +82,13 @@ def run_task(root: Path, item: dict, output: Path, run_id: str,
         bundle = copy_bundle(root, item, output / 'artifacts')
         round_dir = output / 'rounds/round_0'
         round_dir.mkdir(parents=True)
-        results = run_all_solvers(specs, bundle, round_dir, frozen_task=True)
+        if submitted is None:
+            results = run_all_solvers(specs, bundle, round_dir, frozen_task=True)
+        else:
+            results = {
+                label: record_submitted_answer(label, path, round_dir / 'models' / label)
+                for label, path in submitted.items()
+            }
         active = [s.label for s in specs if results[s.label]['solver_outcome'] != 'no_final_answer']
         assignment = anonymous_assignment(item['paper_id'], run_id, 0, active)
         atomic_write_json(round_dir / 'anonymous_assignment.json', assignment)
@@ -118,6 +125,9 @@ def parse_args() -> argparse.Namespace:
     models = parser.add_mutually_exclusive_group()
     models.add_argument('--mode', choices=['test', 'formal'])
     models.add_argument('--solver', type=solver_spec, action='append')
+    models.add_argument('--answer', type=solver_spec, action='append',
+                        help='LABEL=answer.md for one task, or LABEL=directory with <paper_id>.md files')
+    parser.add_argument('--answers-only', action='store_true', help=argparse.SUPPRESS)
     parser.add_argument('--profiles-dir', type=Path, default=DEFAULT_PROFILES_DIR)
     parser.add_argument('--judge-api-profile', type=Path)
     parser.add_argument('--judge-model', default=load_suite()['agent']['model'])
@@ -131,6 +141,10 @@ def parse_args() -> argparse.Namespace:
     args = parser.parse_args()
     if args.paper_workers < 1:
         parser.error('paper-workers must be positive')
+    if args.answers_only and not args.answer:
+        parser.error('evaluate-answers requires at least one --answer LABEL=PATH')
+    if args.answer and not args.answers_only:
+        parser.error('submitted answers use the evaluate-answers stage')
     if not args.dry_run and (not args.run_root or not args.run_id):
         parser.error('run-root and run-id are required unless dry-run')
     return args
@@ -143,24 +157,45 @@ def main() -> int:
     paper_ids = list(tasks) if args.all else args.paper_id
     if len(set(paper_ids)) != len(paper_ids) or set(paper_ids) - tasks.keys():
         raise ValueError('duplicate or unknown requested task')
+    submissions = None
+    if args.answer:
+        if not 1 <= len(args.answer) <= 8 or len({label for label, _ in args.answer}) != len(args.answer):
+            raise ValueError('choose one to eight uniquely labeled answers')
+        submissions = {}
+        for paper_id in paper_ids:
+            submissions[paper_id] = {}
+            for label, source in args.answer:
+                if source.is_dir():
+                    path = source / f'{paper_id}.md'
+                elif len(paper_ids) == 1:
+                    path = source
+                else:
+                    raise ValueError('multiple tasks require an answer directory per label')
+                if path.is_symlink() or not path.is_file():
+                    raise FileNotFoundError(f'answer must be a regular file: {path}')
+                submissions[paper_id][label] = path.resolve()
     if args.dry_run:
         print(json.dumps({'validated_tasks': len(tasks), 'selected_tasks': paper_ids,
-                          'solver_exposure': ['task.md', 'frozen_solver_instructions'],
-                          'model_requests': 0}, indent=2))
+                          'solver_exposure': ('external_unverified' if submissions is not None
+                                              else ['task.md', 'frozen_solver_instructions']),
+                          'model_requests': 0, 'submitted_answers': bool(submissions)}, indent=2))
         return 0
     output = args.run_root.resolve()
     if output == root or output.is_relative_to(root) or root.is_relative_to(output):
         raise ValueError('output must be disjoint from the dataset')
     if not re.fullmatch(r'[A-Za-z0-9_-]+', args.run_id):
         raise ValueError('invalid run ID')
-    profiles = args.solver or solver_profiles(args.mode or 'test', args.profiles_dir.resolve())
-    if not profiles or len(profiles) > 8 or len({p[0] for p in profiles}) != len(profiles):
-        raise ValueError('choose one to eight uniquely labeled solvers')
-    specs = []
-    for label, profile in profiles:
-        profile = profile.resolve()
-        config = ProviderConfig.from_environment(merged_environment(profile), base_dir=profile.parent)
-        specs.append(SolverSpec(label, config))
+    if submissions is None:
+        profiles = args.solver or solver_profiles(args.mode or 'test', args.profiles_dir.resolve())
+        if not profiles or len(profiles) > 8 or len({p[0] for p in profiles}) != len(profiles):
+            raise ValueError('choose one to eight uniquely labeled solvers')
+        specs = []
+        for label, profile in profiles:
+            profile = profile.resolve()
+            config = ProviderConfig.from_environment(merged_environment(profile), base_dir=profile.parent)
+            specs.append(SolverSpec(label, config))
+    else:
+        specs = [SolverSpec(label, None) for label, _ in args.answer]
     judge = AgentConfig((args.judge_api_profile or args.profiles_dir / 'get-api').resolve(),
                         args.codex_bin, args.judge_model, args.judge_reasoning_effort,
                         args.judge_timeout_seconds)
@@ -168,13 +203,17 @@ def main() -> int:
     record = {'name': 'MLTheoryBench', 'run_id': args.run_id, 'status': 'running',
               'protocol': 'released_frozen_tasks_joint_judging', 'paper_ids': paper_ids,
               'formal_feedback_enabled': False,
-              'solvers': {s.label: public_config(s.config) for s in specs},
+              'solvers': {s.label: (public_config(s.config) if submissions is None else
+                                    {'source': 'external_submission', 'usage': 'external_unreported'})
+                          for s in specs},
               'judge': {'model': judge.model, 'reasoning_effort': judge.reasoning_effort}}
     atomic_write_json(output / 'run.json', record)
     results = []
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.paper_workers) as executor:
         futures = [executor.submit(run_task, root, tasks[pid], output / 'papers' / pid,
-                                   args.run_id, specs, judge) for pid in paper_ids]
+                                   args.run_id, specs, judge,
+                                   None if submissions is None else submissions[pid])
+                   for pid in paper_ids]
         for future in concurrent.futures.as_completed(futures):
             result = future.result()
             results.append(result)
